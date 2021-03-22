@@ -14,18 +14,18 @@ class GraphReader:
         if representation == GraphRepresentation.INCIDENCE_MATRIX:
             return self.read_incidence_matrix()
 
-    def set_input_filename(self, filename):
-        self.filename = filename
-
-    def is_square(self):
-        return all(len(row) == len(self.graph_matrix) for row in self.graph_matrix)
+    def is_square(self, matrix):
+        return all(len(row) == len(matrix) for row in matrix)
 
     def read_adjacency_matrix(self):
         try:
-            self.graph_matrix = np.loadtxt(self.filename)
+            matrix = np.loadtxt(self.filename)
         except:
             return False
-        return self.is_square()
+        if self.is_square(matrix):
+            return matrix
+        else:
+            return False
 
     def is_symmetrical(self, matrix):
         transpose_matrix = matrix.transpose()
@@ -49,8 +49,7 @@ class GraphReader:
             matrix[edge[0]][edge[1]] = 1
             matrix[edge[1]][edge[0]] = 1
         if self.is_symmetrical(matrix):
-            self.graph_matrix = matrix
-            return True
+            return matrix
         else:
             return False
 
@@ -69,8 +68,7 @@ class GraphReader:
         except:
             return False
         if self.is_symmetrical(matrix):
-            self.graph_matrix = matrix
-            return True
+            return matrix
         else:
             return False
 
