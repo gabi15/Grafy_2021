@@ -1,21 +1,21 @@
 import numpy as np
+from src.GraphRepresentation import GraphRepresentation
 
 
 class GraphReader:
-    graph_matrix = None
     filename = None
 
-    def __init__(self, option, filename):
+    def read_data(self, representation, filename):
         self.filename = filename
-        self.option = option
-
-    def read_input_data(self):
-        if self.option == 1:
+        if representation == GraphRepresentation.ADJACENCY_MATRIX:
             return self.read_adjacency_matrix()
-        if self.option == 2:
+        if representation == GraphRepresentation.ADJACENCY_LIST:
             return self.read_adjacency_list()
-        if self.option == 3:
+        if representation == GraphRepresentation.INCIDENCE_MATRIX:
             return self.read_incidence_matrix()
+
+    def set_input_filename(self, filename):
+        self.filename = filename
 
     def is_square(self):
         return all(len(row) == len(self.graph_matrix) for row in self.graph_matrix)
@@ -50,7 +50,6 @@ class GraphReader:
             matrix[edge[1]][edge[0]] = 1
         if self.is_symmetrical(matrix):
             self.graph_matrix = matrix
-            print(self.graph_matrix)
             return True
         else:
             return False
@@ -59,7 +58,7 @@ class GraphReader:
         adjacency_list = []
         with open(self.filename) as f:
             for line in f:
-                row = [int(item.strip()) for item in line.split(" ")]
+                row = [int(item.strip()) for item in line.split(" ") if line.strip()]
                 adjacency_list.append(row)
         matrix_size = len(adjacency_list)
         matrix = np.zeros((matrix_size, matrix_size), np.int8)
