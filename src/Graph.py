@@ -3,9 +3,9 @@ from src.GraphConverter import GraphConverter
 
 
 class Graph:
-    adjacency_matrix = None
     graph_reader = GraphReader()
     graph_converter = GraphConverter()
+    adjacency_matrix = None
 
     def read_data(self, representation, filename):
         self.adjacency_matrix = self.graph_reader.read_data(representation, filename)

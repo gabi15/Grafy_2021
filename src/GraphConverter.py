@@ -1,6 +1,7 @@
 from src.GraphRepresentation import GraphRepresentation
 import numpy as np
 
+
 class GraphConverter:
 
     def convert_graph(self, graph, representation):
