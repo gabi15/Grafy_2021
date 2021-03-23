@@ -9,6 +9,9 @@ graph.read_data(GraphRepresentation(3), "file.txt")
 # z 3 na razie drukuje na sztywno - nie ma potrzeby wczytywania z pliku
 print(graph.get_graph(GraphRepresentation(3)))
 
+graph.save_to_file(GraphRepresentation(1), "out.txt")
+
+
 
 #graph.print_graph_matrix()
 
