@@ -1,8 +1,6 @@
 import math
 import networkx as netx
 import matplotlib.pyplot as plt
-# do wyrzucenia w przyszlosci
-import numpy as np
 
 
 def visualise_graph_on_circle(adjacency_matrix, save_to_file = False):
@@ -25,7 +23,8 @@ def visualise_graph_on_circle(adjacency_matrix, save_to_file = False):
     else:
         plt.show()
 
-# przykladowa macierz sasiedztwa
+
+''' przykladowa macierz sasiedztwa
 arr = np.matrix([[0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
                  [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
                  [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
@@ -39,3 +38,4 @@ arr = np.matrix([[0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
                  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0]])
 visualise_graph_on_circle(arr)
+'''
