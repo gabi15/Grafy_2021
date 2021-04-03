@@ -9,19 +9,19 @@ import networkx as netx
 
 
 class Graph:
-    graph_reader = GraphReader()
-    graph_converter = GraphConverter()
-    graph_generator = RandomGraphGenerator()
+    reader = GraphReader()
+    converter = GraphConverter()
+    generator = RandomGraphGenerator()
     adjacency_matrix = None
 
     def read_data(self, representation, filename):
-        self.adjacency_matrix = self.graph_reader.read_data(representation, filename)
+        self.adjacency_matrix = self.reader.read_data(representation, filename)
         if self.adjacency_matrix is None:
             return False
         return True
 
     def get_graph(self, output_representation):
-        return self.graph_converter.convert_graph(self.adjacency_matrix,GraphRepresentation.ADJACENCY_MATRIX, output_representation)
+        return self.converter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, output_representation)
 
     def save_to_file(self, representation, filename):
         filename = "../data/" + filename
@@ -62,15 +62,17 @@ class Graph:
         print(self.adjacency_matrix)
 
     def generate_NL_graph(self, n, l):
-        self.adjacency_matrix = self.graph_generator.random_graph_edges(n, l)
+        graph = self.generator.random_graph_edges(n, l)
+        if graph is not None:
+            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
         if self.adjacency_matrix is None:
             return False
         return True
 
     def generate_NP_graph(self, n, p):
-        graph = self.graph_generator.random_graph_probability(n, p)
+        graph = self.generator.random_graph_probability(n, p)
         if graph is not None:
-            self.adjacency_matrix = self.graph_converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
+            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
         if self.adjacency_matrix is None:
             return False
         return True
