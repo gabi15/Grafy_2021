@@ -1,12 +1,13 @@
 import numpy as np
-from src.GraphRepresentation import GraphRepresentation
+from GraphRepresentation import GraphRepresentation
+from GraphConverter import GraphConverter
 
 
 class GraphReader:
     filename = None
 
     def read_data(self, representation, filename):
-        self.filename = filename
+        self.filename = "../data/" + filename
         if representation == GraphRepresentation.ADJACENCY_MATRIX:
             return self.read_adjacency_matrix()
         if representation == GraphRepresentation.ADJACENCY_LIST:
@@ -25,7 +26,8 @@ class GraphReader:
         if self.is_square(matrix):
             return matrix
         else:
-            return False
+            print("Macierz nie jest kwadratowa - błędne dane wejściowe")
+            return None
 
     def is_symmetrical(self, matrix):
         transpose_matrix = matrix.transpose()
@@ -36,22 +38,17 @@ class GraphReader:
         try:
             incidence_matrix = np.loadtxt(self.filename)
         except:
-            return False
-        matrix_size = len(incidence_matrix)
-        matrix = np.zeros((matrix_size, matrix_size), np.int8)
-        for column in incidence_matrix.transpose():
-            edge = []
-            for i, item in enumerate(column):
-                if item == 1:
-                    edge.append(i)
-            if len(edge) != 2:
-                return False
-            matrix[edge[0]][edge[1]] = 1
-            matrix[edge[1]][edge[0]] = 1
-        if self.is_symmetrical(matrix):
-            return matrix
-        else:
-            return False
+            return None
+        matrix = GraphConverter().convert_graph(incidence_matrix, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
+        if matrix is not None:
+            if self.is_symmetrical(matrix):
+                return matrix
+            else:
+                print("Macierz nie jest symetryczna - błędne dane wejściowe")
+                return None
+        print("Błędne dane wejściowe")
+        return None
+
 
     def read_adjacency_list(self):
         adjacency_list = []
@@ -59,18 +56,15 @@ class GraphReader:
             for line in f:
                 row = [int(item.strip()) for item in line.split(" ") if line.strip()]
                 adjacency_list.append(row)
-        matrix_size = len(adjacency_list)
-        matrix = np.zeros((matrix_size, matrix_size), np.int8)
-        try:
-            for i, row in enumerate(adjacency_list):
-                for item in row:
-                    matrix[i][item-1] = 1
-        except:
-            return False
-        if self.is_symmetrical(matrix):
-            return matrix
-        else:
-            return False
+        matrix = GraphConverter().convert_graph(adjacency_list, GraphRepresentation.ADJACENCY_LIST, GraphRepresentation.ADJACENCY_MATRIX)
+        if matrix:
+            if self.is_symmetrical(matrix):
+                return matrix
+            else:
+                print("Macierz nie jest symetryczna - błędne dane wejściowe")
+                return None
+        print("Indeks listy wykracza poza ilość wierzchołków - błędne dane wejściowe")
+        return None
 
 
 
