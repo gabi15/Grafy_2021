@@ -5,74 +5,62 @@ import sys
 
 graph = Graph()
 
-# GraphRepresentation(3) dla macierzy incydencji
-#graph.read_data(GraphRepresentation(3), "file.txt")
-
-# z 3 na razie drukuje na sztywno - nie ma potrzeby wczytywania z pliku
-#print(graph.get_graph(GraphRepresentation(3)))
-
-#graph.save_to_file(GraphRepresentation(1), "out.txt")
-
-
-# dummy main function
-
 def main():
 
-    job = int(input("Select option:\n"
-                    "1 - Read a graph from file \n"
+    job = int(input("Select an option:\n"
+                    "1 - Read the graph from file \n"
                     "2 - Generate a random graph \n"
                     ))
 
     if job in [1, 2]:
         if job == 1:
             if not read_graph():
-                print("Wystąpił błąd podczas odczytu pliku")
+                print("An error occurred while reading the file.")
                 return 0
         if job == 2:
             if not generate_graph():
-                print("Wystąpił błąd podczas generowania grafu")
+                print("An error occurred while generating the graph")
                 return 0
         while True:
-            job = int(input("Wybierz co chcesz zrobić z utworzonym grafem:\n"
-                            "1 - Zapisz graf do pliku\n"
-                            "2 - Narysuj graf\n"
-                            "3 - Opuść program\n"))
+            job = int(input("Choose what you want to do with the graph:\n"
+                            "1 - Save the graph to the file\n"
+                            "2 - Print the graph\n"
+                            "3 - Exit the program\n"))
             if job in [1, 2, 3]:
                 if job == 1:
                     if not save_graph():
-                        print("Wystąpił problem przy zapisie grafu")
+                        print("An error occurred while saving the graph")
                     else:
-                        print("Udało się. Sprawdź folder data")
+                        print("Completed. Check folder data")
                 if job == 2:
                     if not draw_graph():
-                        print("Wystąpił błąd podczas rysowania grafu")
+                        print("An error occurred while printing the graph")
                 if job == 3:
-                    print("Zapraszamy ponownie")
                     sys.exit(1)
             else:
-                print("Wybrano złą opcję, spróbuj ponownie")
+                print("Wrong option selected, try again")
     else:
-        print("Zły wybór opcji, spróbuj jeszcze raz")
+        print("Wrong option selected, try again")
 
 
 def save_graph():
-    representation = int(input("Wybierz reprezentację do zapisu:\n"
-                               "1 - Macierz sąsiedztwa\n"
-                               "2 - Lista sąsiedztwa\n"
-                               "3 - Macierz incydencji\n"
+    representation = int(input("Select an output representation:\n"
+                               "1 - Adjacency matrix\n"
+                               "2 - Adjacency list\n"
+                               "3 - Incidence matrix\n"
                                ))
     if representation in [1, 2, 3]:
-        filename = input("Wybierz nazwę pliku wynikowego:\n")
+        filename = input("Insert an output filename:\n")
         return graph.save_to_file(GraphRepresentation(representation), filename)
     else:
-        print("Wybrano złą reprezentację")
+        print("Wrong representation selected, try again")
         return False
 
 
 def draw_graph():
-    save_to_file = int(input("Czy chcesz zapisać obrazek do pliku? Wybierz odpowiednią opcję:\n"
-                             "0 - Nie\n"
-                             "1 - Tak\n"
+    save_to_file = int(input("Do you want to save image to a file? Select an option:\n"
+                             "0 - No\n"
+                             "1 - Yes\n"
                              ))
     if save_to_file in [0, 1]:
         graph.visualise_graph_on_circle(bool(save_to_file))
@@ -80,35 +68,35 @@ def draw_graph():
 
 
 def generate_graph():
-    graph_type = int(input("Wybierz rodzaj grafu, który chcesz wygenerować\n"
+    graph_type = int(input("Select type of the graph:\n"
                            "1 - G(n,l)\n"
                            "2 - G(n,p)\n"
                            ))
     if graph_type in [1, 2]:
-        n = int(input("Wprowadź liczbę wierzchołków grafu:\n"))
+        n = int(input("Enter the number of graph vertices:\n"))
         if graph_type == 1:
-            l = int(input("Wprowadź liczbę krawędzi grafu:\n"))
+            l = int(input("Enter the number of graph edges:\n"))
             graph.generate_NL_graph(n, l)
         if graph_type == 2:
-            p = int(input("Wprowadź prawdopodobieństwo występowania krawędzi w zakresie [0,1]:\n"))
+            p = int(input("Enter the probability in range [0,1]:\n"))
             graph.generate_NP_graph(n, p)
         return True
     else:
-        print("Zły wybór typu grafu")
+        print("Wrong type of the graph selected")
         return False
 
 
 def read_graph():
-    representation = int(input("Wybierz rodzaj reprezentacji, którą przekazujesz do programu\n"
-                               "1 - Macierz sąsiedztwa\n"
-                               "2 - Lista sąsiedztwa\n"
-                               "3 - Macierz incydencji\n"
+    representation = int(input("Enter a representation of the input\n"
+                               "1 - Adjacency matrix\n"
+                               "2 - Adjacency list\n"
+                               "3 - Incidence matrix\n"
                                ))
     if representation in [1, 2, 3]:
-        filename = input("Podaj nazwę pliku z danymi umieszczonym w folderze data:\n")
+        filename = input("Enter the name of the input file (stored in folder data):\n")
         return graph.read_data(GraphRepresentation(representation), filename)
     else:
-        print("Podano złą komendę")
+        print("Wrong option selected")
         return False
 
 

@@ -21,7 +21,8 @@ class Graph:
         return True
 
     def get_graph(self, output_representation):
-        return self.converter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, output_representation)
+        return self.converter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
+                                            output_representation)
 
     def save_to_file(self, representation, filename):
         filename = "../data/" + filename
@@ -64,7 +65,8 @@ class Graph:
     def generate_NL_graph(self, n, l):
         graph = self.generator.random_graph_edges(n, l)
         if graph is not None:
-            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
+            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX,
+                                                                 GraphRepresentation.ADJACENCY_MATRIX)
         if self.adjacency_matrix is None:
             return False
         return True
@@ -72,7 +74,8 @@ class Graph:
     def generate_NP_graph(self, n, p):
         graph = self.generator.random_graph_probability(n, p)
         if graph is not None:
-            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
+            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX,
+                                                                 GraphRepresentation.ADJACENCY_MATRIX)
         if self.adjacency_matrix is None:
             return False
         return True

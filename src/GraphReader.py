@@ -26,7 +26,7 @@ class GraphReader:
         if self.is_square(matrix):
             return matrix
         else:
-            print("Macierz nie jest kwadratowa - błędne dane wejściowe")
+            print("Matrix is not square - incorrect input")
             return None
 
     def is_symmetrical(self, matrix):
@@ -44,11 +44,10 @@ class GraphReader:
             if self.is_symmetrical(matrix):
                 return matrix
             else:
-                print("Macierz nie jest symetryczna - błędne dane wejściowe")
+                print("Matrix is not symmetrical - incorrect input")
                 return None
-        print("Błędne dane wejściowe")
+        print("Incorrect input")
         return None
-
 
     def read_adjacency_list(self):
         adjacency_list = []
@@ -61,9 +60,9 @@ class GraphReader:
             if self.is_symmetrical(matrix):
                 return matrix
             else:
-                print("Macierz nie jest symetryczna - błędne dane wejściowe")
+                print("Matrix is not symmetrical - incorrect input")
                 return None
-        print("Indeks listy wykracza poza ilość wierzchołków - błędne dane wejściowe")
+        print("List index is bigger than the number of vertices - incorrect input")
         return None
 
 
