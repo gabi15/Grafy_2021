@@ -1,9 +1,13 @@
 from Graph import Graph
 from GraphRepresentation import GraphRepresentation
+from RandomGraphGenerator import BadNumberOfVertices
+from RandomGraphGenerator import BadNumberOfEdges
+from RandomGraphGenerator import BadProbability
 import sys
 
 
 graph = Graph()
+
 
 def main():
 
@@ -76,10 +80,24 @@ def generate_graph():
         n = int(input("Enter the number of graph vertices:\n"))
         if graph_type == 1:
             l = int(input("Enter the number of graph edges:\n"))
-            graph.generate_NL_graph(n, l)
+            try:
+                graph.generate_NL_graph(n, l)
+            except BadNumberOfEdges:
+                print("enter correct number of edges please, now try again")
+                generate_graph()
+            except BadNumberOfVertices:
+                print("Number of edges and vertices must be bigger than 1, now try again")
+                generate_graph()
         if graph_type == 2:
             p = float(input("Enter the probability in range [0,1]:\n"))
-            graph.generate_NP_graph(n, p)
+            try:
+                graph.generate_NP_graph(n, p)
+            except BadProbability:
+                print("Enter correct probability please, now try again")
+                generate_graph()
+            except BadNumberOfVertices:
+                print("Number of edges and vertices must be bigger than 1, now try again")
+                generate_graph()
         return True
     else:
         print("Wrong type of the graph selected")

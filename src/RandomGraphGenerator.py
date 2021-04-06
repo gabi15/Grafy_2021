@@ -18,17 +18,10 @@ class RandomGraphGenerator:
 
     @staticmethod
     def random_graph_edges(n, m):
-        try:
-            if n < 2:
-                raise BadNumberOfVertices
-            if m > n * (n - 1) / 2 or m <= 0:
-                raise BadNumberOfEdges
-        except BadNumberOfVertices:
-            print("number of edges and vertices must be bigger than 1")
-            return None
-        except BadNumberOfEdges:
-            print("enter correct number of edges please")
-            return None
+        if n < 2:
+            raise BadNumberOfVertices
+        if m > n * (n - 1) / 2 or m <= 0:
+            raise BadNumberOfEdges
         matrix = np.zeros((n, m), dtype=int)
         i = 0
         while i < m:
@@ -49,18 +42,11 @@ class RandomGraphGenerator:
         return matrix
 
     @staticmethod
-    def random_graph_probability(n, p):  # creates a graph using the incidence matrix
-        try:
-            if n < 2:
-                raise BadNumberOfVertices
-            if p > 1 or p < 0:
-                raise BadProbability
-        except BadNumberOfVertices:
-            print("number of vertices must be bigger than 1")
-            return None
-        except BadProbability:
-            print("probability must be between 0 and 1")
-            return None
+    def random_graph_probability(n, p):  # creates a graph using the adjacency matrix
+        if n < 2:
+            raise BadNumberOfVertices
+        if p > 1 or p < 0:
+            raise BadProbability
         matrix = np.zeros((n, n), dtype=int)
 
         for i in range(n):
