@@ -62,7 +62,7 @@ class GraphConverter:
                 if item == 1:
                     edge.append(i)
             if len(edge) != 2:
-                return False
+                return None
             matrix[edge[0]][edge[1]] = 1
             matrix[edge[1]][edge[0]] = 1
         return matrix

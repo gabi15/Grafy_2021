@@ -25,16 +25,17 @@ class Graph:
                                             output_representation)
 
     def save_to_file(self, representation, filename):
-        filename = "../data/" + filename
+        filename = "data/" + filename
         output_matrix = self.get_graph(representation)
         if isinstance(output_matrix, list):
-            with open(filename, "w") as f:
+            with open(filename, "w+") as f:
                 for row in output_matrix:
                     f.write(" ".join(str(item) for item in row))
                     f.write("\n")
             return True
         elif isinstance(output_matrix, np.ndarray):
-            np.savetxt(filename, output_matrix, fmt="%i")
+            with open(filename, "w+") as f:
+                np.savetxt(f, output_matrix, fmt="%i")
             return True
         else:
             return False
@@ -55,7 +56,7 @@ class Graph:
         plt.axis("off")
 
         if save_to_file:
-            plt.savefig('../data/circular_plot.png')
+            plt.savefig('data/circular_plot.png')
         else:
             plt.show()
 
@@ -74,8 +75,6 @@ class Graph:
     def generate_NP_graph(self, n, p):
         graph = self.generator.random_graph_probability(n, p)
         if graph is not None:
-            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX,
-                                                                 GraphRepresentation.ADJACENCY_MATRIX)
-        if self.adjacency_matrix is None:
-            return False
-        return True
+            self.adjacency_matrix = graph
+            return True
+        return False

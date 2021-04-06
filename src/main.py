@@ -78,7 +78,7 @@ def generate_graph():
             l = int(input("Enter the number of graph edges:\n"))
             graph.generate_NL_graph(n, l)
         if graph_type == 2:
-            p = int(input("Enter the probability in range [0,1]:\n"))
+            p = float(input("Enter the probability in range [0,1]:\n"))
             graph.generate_NP_graph(n, p)
         return True
     else:
