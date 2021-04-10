@@ -39,8 +39,8 @@ class GraphReader:
     @staticmethod
     def is_symmetrical(matrix):
         transpose_matrix = matrix.transpose()
-        comparision = transpose_matrix == matrix
-        return comparision.all()
+        comparison = transpose_matrix == matrix
+        return comparison.all()
 
     def read_incidence_matrix(self):
         try:
