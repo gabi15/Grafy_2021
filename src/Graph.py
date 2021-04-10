@@ -5,7 +5,7 @@ from GraphRepresentation import GraphRepresentation
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import networkx as netx
+import networkx as nx
 
 
 class Graph:
@@ -51,8 +51,8 @@ class Graph:
         for node in range(nodes_number):
             nodes_positions.update({node: (math.cos(phi * node) * graph_radius, math.sin(phi * node) * graph_radius)})
 
-        circular_graph = netx.from_numpy_matrix(self.adjacency_matrix)
-        netx.draw_networkx(circular_graph, nodes_positions)
+        circular_graph = nx.from_numpy_matrix(self.adjacency_matrix)
+        nx.draw_networkx(circular_graph, nodes_positions)
         plt.axis("off")
 
         if save_to_file:
