@@ -1,4 +1,5 @@
 from Graph import Graph
+from GraphReader import IncorrectInputException
 from GraphRepresentation import GraphRepresentation
 from RandomGraphGenerator import BadNumberOfVertices
 from RandomGraphGenerator import BadNumberOfEdges
@@ -19,7 +20,6 @@ def main():
     if job in [1, 2]:
         if job == 1:
             if not read_graph():
-                print("An error occurred while reading the file.")
                 return 0
         if job == 2:
             if not generate_graph():
@@ -112,7 +112,11 @@ def read_graph():
                                ))
     if representation in [1, 2, 3]:
         filename = input("Enter the name of the input file (stored in folder data):\n")
-        return graph.read_data(GraphRepresentation(representation), filename)
+        try:
+            graph.read_data(GraphRepresentation(representation), filename)
+        except IncorrectInputException as e:
+            print(e.message)
+            return False
     else:
         print("Wrong option selected")
         return False
