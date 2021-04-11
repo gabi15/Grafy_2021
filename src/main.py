@@ -105,22 +105,27 @@ def generate_graph():
 
 
 def read_graph():
-    representation = int(input("Enter a representation of the input\n"
-                               "1 - Adjacency matrix\n"
-                               "2 - Adjacency list\n"
-                               "3 - Incidence matrix\n"
-                               ))
-    if representation in [1, 2, 3]:
-        filename = input("Enter the name of the input file (stored in folder data):\n")
-        try:
-            graph.read_data(GraphRepresentation(representation), filename)
-        except IncorrectInputException as e:
-            print(e.message)
+    try:
+        representation = int(input("Enter a representation of the input\n"
+                                   "1 - Adjacency matrix\n"
+                                   "2 - Adjacency list\n"
+                                   "3 - Incidence matrix\n"
+                                   "4 - Graphical sequence\n"
+                                   ))
+        if representation in [1, 2, 3, 4]:
+            filename = input("Enter the name of the input file (stored in folder data):\n")
+            try:
+                graph.read_data(GraphRepresentation(representation), filename)
+            except IncorrectInputException as e:
+                print(e.message)
+                return False
+        else:
+            print("Wrong option selected")
             return False
-    else:
-        print("Wrong option selected")
+    except ValueError as ve:
+        print("Wrong option format: " + str(ve))
         return False
-
+    return True
 
 if __name__ == "__main__":
     main()
