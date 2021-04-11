@@ -23,6 +23,8 @@ class GraphReader:
             return self.read_adjacency_list()
         if representation == GraphRepresentation.INCIDENCE_MATRIX:
             return self.read_incidence_matrix()
+        if representation == GraphRepresentation.GRAPHICAL_SEQUENCE:
+            return self.read_graphical_sequence()
 
     def read_from_file(self) -> np.ndarray:
         """Read a matrix from a file"""
