@@ -2,10 +2,12 @@ from GraphReader import GraphReader
 from GraphConverter import GraphConverter
 from RandomGraphGenerator import RandomGraphGenerator
 from GraphRepresentation import GraphRepresentation
+from copy import deepcopy
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
+import random
 
 
 class Graph:
@@ -78,3 +80,33 @@ class Graph:
             self.adjacency_matrix = graph
             return True
         return False
+
+    def randomize_graph_edges(self):
+        adjacency_list = self.converter.convert_adj_mat_to_adj_list(self.adjacency_matrix)
+        adjacency_list_copy = deepcopy(adjacency_list)
+        flattened_list = [item for sublist in adjacency_list for item in sublist]
+
+        if len(adjacency_list) == 2:
+            return False
+
+        while True:
+            first, second = random.choices(flattened_list, k=2)
+            old_first, old_second = random.choices(flattened_list, k=2)
+
+            # TODO skrocic, rozdzielic, uproscic
+            if not(first == second) \
+                    and (first not in adjacency_list[second-1])\
+                    and not (old_first == old_second) \
+                    and (old_first in adjacency_list[old_second - 1]) \
+                    and not (old_first == first and old_second == second)\
+                    and not (old_second == first and old_first == second):
+
+                adjacency_list_copy[old_second-1].remove(old_first)
+                adjacency_list_copy[old_first-1].remove(old_second)
+
+                adjacency_list_copy[first-1].append(second)
+                adjacency_list_copy[second-1].append(first)
+                break
+
+        self.adjacency_matrix = self.converter.convert_adj_list_to_adj_mat(adjacency_list_copy)
+        return True
