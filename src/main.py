@@ -31,7 +31,7 @@ def main():
                             "2 - Print the graph\n"
                             "3 - Randomize graph edges\n"
                             "4 - Exit the program\n"))
-            if job in [1, 2, 3]:
+            if job in [1, 2, 3, 4]:
                 if job == 1:
                     if not save_graph():
                         print("An error occurred while saving the graph")
@@ -135,7 +135,7 @@ def read_graph():
 
 
 def randomize_graph():
-    graph.randomize_graph_edges()
+    return graph.randomize_graph_edges()
 
 
 if __name__ == "__main__":

@@ -86,27 +86,51 @@ class Graph:
         adjacency_list_copy = deepcopy(adjacency_list)
         flattened_list = [item for sublist in adjacency_list for item in sublist]
 
-        if len(adjacency_list) == 2:
+        if len(adjacency_list) <= 3:
             return False
 
-        while True:
-            first, second = random.choices(flattened_list, k=2)
-            old_first, old_second = random.choices(flattened_list, k=2)
+        free_edges_counter = 0
+        n = len(adjacency_list)
+        for i in adjacency_list:
+            free_edges_counter += n - 1 - len(i)
+        free_edges_counter /= 2
 
-            # TODO skrocic, rozdzielic, uproscic
-            if not(first == second) \
-                    and (first not in adjacency_list[second-1])\
-                    and not (old_first == old_second) \
-                    and (old_first in adjacency_list[old_second - 1]) \
-                    and not (old_first == first and old_second == second)\
-                    and not (old_second == first and old_first == second):
+        fail = 0
+        while fail < 15:
+            edges_to_randomize = random.randint(1, free_edges_counter)
+            endless_loop_flag = 0
 
-                adjacency_list_copy[old_second-1].remove(old_first)
-                adjacency_list_copy[old_first-1].remove(old_second)
+            while edges_to_randomize > 0 and endless_loop_flag <= 20:
+                first_start, first_end, second_start, second_end = random.sample(set(flattened_list), k=4)
 
-                adjacency_list_copy[first-1].append(second)
-                adjacency_list_copy[second-1].append(first)
-                break
+                if (first_start in adjacency_list_copy[first_end - 1]) and (second_start in adjacency_list_copy[second_end - 1]):
+                    if (first_start not in adjacency_list_copy[second_end - 1]) and (second_start not in adjacency_list_copy[first_end - 1]):
+                        adjacency_list_copy[first_start-1].remove(first_end)
+                        adjacency_list_copy[first_end-1].remove(first_start)
+                        adjacency_list_copy[second_start-1].remove(second_end)
+                        adjacency_list_copy[second_end-1].remove(second_start)
 
-        self.adjacency_matrix = self.converter.convert_adj_list_to_adj_mat(adjacency_list_copy)
-        return True
+                        adjacency_list_copy[first_start - 1].append(second_end)
+                        adjacency_list_copy[second_end - 1].append(first_start)
+                        adjacency_list_copy[second_start - 1].append(first_end)
+                        adjacency_list_copy[first_end - 1].append(second_start)
+                        edges_to_randomize -= 1
+
+                    elif (first_start not in adjacency_list_copy[second_start - 1]) and (second_end not in adjacency_list_copy[first_end - 1]):
+                        adjacency_list_copy[first_start - 1].remove(first_end)
+                        adjacency_list_copy[first_end - 1].remove(first_start)
+                        adjacency_list_copy[second_start - 1].remove(second_end)
+                        adjacency_list_copy[second_end - 1].remove(second_start)
+
+                        adjacency_list_copy[first_start - 1].append(second_start)
+                        adjacency_list_copy[second_start - 1].append(first_start)
+                        adjacency_list_copy[second_end - 1].append(first_end)
+                        adjacency_list_copy[first_end - 1].append(second_end)
+                        edges_to_randomize -= 1
+                endless_loop_flag += 1
+            if endless_loop_flag > 20:
+                fail += 1
+            elif edges_to_randomize == 0:
+                self.adjacency_matrix = self.converter.convert_adj_list_to_adj_mat(adjacency_list_copy)
+                return True
+        return False
