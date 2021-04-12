@@ -41,7 +41,9 @@ def main():
                     if not draw_graph():
                         print("An error occurred while printing the graph")
                 if job == 3:
-                    if not randomize_graph():
+                    number_of_randomizations = int(input("Choose number of randomizations, leave empty for random number:\n"))
+
+                    if not randomize_graph(number_of_randomizations):
                         print("An error occurred while randomizing graph edges")
                     else:
                         print("Completed. Print graph to see changes")
@@ -134,8 +136,8 @@ def read_graph():
     return True
 
 
-def randomize_graph():
-    return graph.randomize_graph_edges()
+def randomize_graph(number_of_randomizations):
+    return graph.randomize_graph_edges(number_of_randomizations)
 
 
 if __name__ == "__main__":

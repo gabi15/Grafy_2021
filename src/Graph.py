@@ -27,7 +27,7 @@ class Graph:
                                             output_representation)
 
     def save_to_file(self, representation, filename):
-        filename = "data/" + filename
+        filename = "./../data/" + filename
         output_matrix = self.get_graph(representation)
         if isinstance(output_matrix, list):
             with open(filename, "w+") as f:
@@ -81,7 +81,7 @@ class Graph:
             return True
         return False
 
-    def randomize_graph_edges(self):
+    def randomize_graph_edges(self, number_of_randomizations):
         adjacency_list = self.converter.convert_adj_mat_to_adj_list(self.adjacency_matrix)
         adjacency_list_copy = deepcopy(adjacency_list)
         flattened_list = [item for sublist in adjacency_list for item in sublist]
@@ -97,7 +97,14 @@ class Graph:
 
         fail = 0
         while fail < 15:
-            edges_to_randomize = random.randint(1, free_edges_counter)
+            if number_of_randomizations is None:
+                edges_to_randomize = random.randint(1, free_edges_counter)
+            else:
+                if number_of_randomizations > free_edges_counter:
+                    return False
+                else:
+                    edges_to_randomize = number_of_randomizations
+                    
             endless_loop_flag = 0
 
             while edges_to_randomize > 0 and endless_loop_flag <= 20:
