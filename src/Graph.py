@@ -69,7 +69,7 @@ class Graph:
                     y2 /= 20
                     x2 += 0.5
                     y2 += 0.5
-                    plt.plot([x, x2], [y, y2], 'r-', linewidth=2)
+                    plt.plot([x, x2], [y, y2], 'r-', linewidth=2, zorder=1)
 
         i = 0
         for node in nodes:
@@ -79,12 +79,12 @@ class Graph:
             x += 0.5
             y += 0.5
             i += 1
-            circle_border = plt.Circle((x, y), radius=0.07*nodes_number/10, color='black')
-            circle = plt.Circle((x, y), radius=0.06*nodes_number/10, color='green')
+            circle_border = plt.Circle((x, y), radius=0.07*nodes_number/10, color='black', zorder=2)
+            circle = plt.Circle((x, y), radius=0.06*nodes_number/10, color='green', zorder=3)
             axes.add_patch(circle_border)
             axes.add_patch(circle)
             if nodes_number <= 20:
-                font_size = 18
+                font_size = 16
             else:
                 font_size = 20
             axes.annotate(i, xy=(x, y), fontsize=font_size, color='white', verticalalignment='center', horizontalalignment='center')
@@ -156,7 +156,7 @@ class Graph:
         fail = 0
         while fail < 15:
             # get random (reasonable) number of randomizations
-            if number_of_randomizations is None:
+            if number_of_randomizations == 0:
                 edges_to_randomize = random.randint(1, free_edges_counter)
             else:
                 # number of randomizations to perform cannot be greater than estimated maximal number of randomizations
