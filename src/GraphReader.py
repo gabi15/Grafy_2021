@@ -13,7 +13,8 @@ class IncorrectInputException(Exception):
 class GraphReader:
     filename = None
 
-    def read_data(self, representation, filename):
+    def read_data(self, representation, filename) -> np.ndarray:
+        """Read a graph from a file using given representation"""
         self.filename = "data/" + filename
         if representation == GraphRepresentation.ADJACENCY_MATRIX:
             return self.read_adjacency_matrix()
@@ -23,10 +24,19 @@ class GraphReader:
             return self.read_incidence_matrix()
 
     @staticmethod
-    def is_square(matrix):
+    def is_square(matrix) -> bool:
+        """Check if a matrix is square"""
         return all(len(row) == len(matrix) for row in matrix)
 
-    def read_adjacency_matrix(self):
+    @staticmethod
+    def is_symmetrical(matrix) -> bool:
+        """Check if the matrix is symmetrical"""
+        transpose_matrix = matrix.transpose()
+        comparision = transpose_matrix == matrix
+        return comparision.all()
+
+    def read_adjacency_matrix(self) -> np.ndarray:
+        """Read an adjacency matrix from a file"""
         try:
             matrix = np.loadtxt(self.filename)
         except Exception as e:
@@ -36,13 +46,8 @@ class GraphReader:
         else:
             raise IncorrectInputException("Incorrect input - adjacency matrix built from input is not square")
 
-    @staticmethod
-    def is_symmetrical(matrix):
-        transpose_matrix = matrix.transpose()
-        comparision = transpose_matrix == matrix
-        return comparision.all()
-
-    def read_incidence_matrix(self):
+    def read_incidence_matrix(self) -> np.ndarray:
+        """Read an incidence matrix from a file"""
         try:
             incidence_matrix = np.loadtxt(self.filename)
         except Exception as e:
@@ -56,8 +61,8 @@ class GraphReader:
         else:
             raise IncorrectInputException("Incorrect input - column of the input matrix should contain two values")
 
-
-    def read_adjacency_list(self):
+    def read_adjacency_list(self) -> np.ndarray:
+        """Read an adjacency list from a file"""
         adjacency_list = []
         try:
             with open(self.filename) as f:
