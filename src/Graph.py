@@ -61,33 +61,21 @@ class Graph:
                 if self.adjacency_matrix[i][j] == 1:
                     (x, y) = nodes[i]
                     (x2, y2) = nodes[j]
-                    x /= 20
-                    y /= 20
-                    x += 0.5
-                    y += 0.5
-                    x2 /= 20
-                    y2 /= 20
-                    x2 += 0.5
-                    y2 += 0.5
-                    plt.plot([x, x2], [y, y2], 'r-', linewidth=2, zorder=1)
+                    plt.plot([x/20+0.5, x2/20+0.5], [y/20+0.5, y2/20+0.5], 'r-', linewidth=2, zorder=1)
 
         i = 0
         for node in nodes:
             (x, y) = node
-            x /= 20
-            y /= 20
-            x += 0.5
-            y += 0.5
             i += 1
-            circle_border = plt.Circle((x, y), radius=0.07*nodes_number/10, color='black', zorder=2)
-            circle = plt.Circle((x, y), radius=0.06*nodes_number/10, color='green', zorder=3)
+            circle_border = plt.Circle((x/20+0.5, y/20+0.5), radius=0.07*nodes_number/10, color='black', zorder=2)
+            circle = plt.Circle((x/20+0.5, y/20+0.5), radius=0.06*nodes_number/10, color='green', zorder=3)
             axes.add_patch(circle_border)
             axes.add_patch(circle)
             if nodes_number <= 20:
                 font_size = 16
             else:
                 font_size = 20
-            axes.annotate(i, xy=(x, y), fontsize=font_size, color='white', verticalalignment='center', horizontalalignment='center')
+            axes.annotate(i, xy=(x/20+0.5, y/20+0.5), fontsize=font_size, color='white', verticalalignment='center', horizontalalignment='center')
 
         plt.axis("off")
         axes.set_aspect('equal')
