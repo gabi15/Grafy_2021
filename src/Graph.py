@@ -7,7 +7,6 @@ from GraphRepresentation import GraphRepresentation
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import networkx as netx
 
 
 class Graph:
