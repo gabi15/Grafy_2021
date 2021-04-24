@@ -87,7 +87,7 @@ class Graph:
         axes.set_aspect('equal')
 
         if save_to_file:
-            plt.savefig('./../data/circular_plot.png')
+            plt.savefig('data/circular_plot.png')
         else:
             plt.show()
 
