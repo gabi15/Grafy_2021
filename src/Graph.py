@@ -27,7 +27,7 @@ class Graph:
                                             output_representation)
 
     def save_to_file(self, representation, filename):
-        filename = "./../data/" + filename
+        filename = "data/" + filename
         output_matrix = self.get_graph(representation)
         if isinstance(output_matrix, list):
             with open(filename, "w+") as f:
@@ -42,11 +42,9 @@ class Graph:
         else:
             return False
 
-    def visualise_graph_on_circle(self, save_to_file=False):
-        '''
-        Visualize graph on a circle. Return visualization or save to file.
-        :param save_to_file: if True, the graph will be saved to circular_plot.png file
-        '''
+    def visualise_graph_on_circle(self, save_to_file=False) -> None:
+        """Visualize graph on a circle. Return visualization or save to file.
+        :param save_to_file: if True, the graph will be saved to circular_plot.png file"""
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         # estimate graph radius
@@ -85,21 +83,19 @@ class Graph:
         axes.set_aspect('equal')
 
         if save_to_file:
-            plt.savefig('./../data/circular_plot.png')
+            plt.savefig('data/circular_plot.png')
         else:
             plt.show()
 
     def visualise_graph(self, save_to_file=False):
-        """
-        Corner cases:
+        """Corner cases:
         - draw empty graph,
         - draw graph with one node,
         - draw graph with more than one component,
         - draw graph with many nodes (50).
 
         Visualize graph on a circle. Return visualization or save to file.
-        :param save_to_file: if True, the graph will be saved to circular_plot.png file
-        """
+        :param save_to_file: if True, the graph will be saved to circular_plot.png file"""
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         graph_radius = 8

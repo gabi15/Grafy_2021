@@ -14,7 +14,7 @@ class GraphReader:
     filename = None
 
     def read_data(self, representation, filename):
-        self.filename = "./../data/" + filename
+        self.filename = "data/" + filename
         if representation == GraphRepresentation.ADJACENCY_MATRIX:
             return self.read_adjacency_matrix()
         if representation == GraphRepresentation.ADJACENCY_LIST:
