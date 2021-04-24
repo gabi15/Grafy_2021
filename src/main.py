@@ -29,8 +29,9 @@ def main():
             job = int(input("Choose what you want to do with the graph:\n"
                             "1 - Save the graph to the file\n"
                             "2 - Print the graph\n"
-                            "3 - Exit the program\n"))
-            if job in [1, 2, 3]:
+                            "3 - Randomize graph edges\n"
+                            "4 - Exit the program\n"))
+            if job in [1, 2, 3, 4]:
                 if job == 1:
                     if not save_graph():
                         print("An error occurred while saving the graph")
@@ -40,6 +41,12 @@ def main():
                     if not draw_graph():
                         print("An error occurred while printing the graph")
                 if job == 3:
+                    number_of_randomizations = int(input("Choose number of randomizations, zero for random in range 1-100:\n"))
+
+                    if not randomize_graph(number_of_randomizations):
+                        print("An error occurred while randomizing graph edges")
+
+                if job == 4:
                     sys.exit(1)
             else:
                 print("Wrong option selected, try again")
@@ -105,21 +112,31 @@ def generate_graph():
 
 
 def read_graph():
-    representation = int(input("Enter a representation of the input\n"
-                               "1 - Adjacency matrix\n"
-                               "2 - Adjacency list\n"
-                               "3 - Incidence matrix\n"
-                               ))
-    if representation in [1, 2, 3]:
-        filename = input("Enter the name of the input file (stored in folder data):\n")
-        try:
-            graph.read_data(GraphRepresentation(representation), filename)
-        except IncorrectInputException as e:
-            print(e.message)
+    try:
+        representation = int(input("Enter a representation of the input\n"
+                                   "1 - Adjacency matrix\n"
+                                   "2 - Adjacency list\n"
+                                   "3 - Incidence matrix\n"
+                                   "4 - Graphical sequence\n"
+                                   ))
+        if representation in [1, 2, 3, 4]:
+            filename = input("Enter the name of the input file (stored in folder data):\n")
+            try:
+                graph.read_data(GraphRepresentation(representation), filename)
+            except IncorrectInputException as e:
+                print(e.message)
+                return False
+        else:
+            print("Wrong option selected")
             return False
-    else:
-        print("Wrong option selected")
+    except ValueError as ve:
+        print("Wrong option format: " + str(ve))
         return False
+    return True
+
+
+def randomize_graph(number_of_randomizations):
+    return graph.randomize_graph_edges(number_of_randomizations)
 
 
 if __name__ == "__main__":
