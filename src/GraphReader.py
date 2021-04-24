@@ -40,7 +40,7 @@ class GraphReader:
         try:
             matrix = np.loadtxt(self.filename)
         except Exception as e:
-            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e))
+            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
         if self.is_square(matrix):
             return matrix
         else:
@@ -51,7 +51,7 @@ class GraphReader:
         try:
             incidence_matrix = np.loadtxt(self.filename)
         except Exception as e:
-            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e))
+            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
         matrix = GraphConverter().convert_graph(incidence_matrix, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
         if matrix is not None:
             if self.is_symmetrical(matrix):
@@ -70,7 +70,7 @@ class GraphReader:
                     row = [int(item.strip()) for item in line.split(" ") if line.strip()]
                     adjacency_list.append(row)
         except Exception as e:
-            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e))
+            raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
         matrix = GraphConverter().convert_graph(adjacency_list, GraphRepresentation.ADJACENCY_LIST, GraphRepresentation.ADJACENCY_MATRIX)
         if matrix:
             if self.is_symmetrical(matrix):

@@ -114,6 +114,7 @@ def read_graph():
         filename = input("Enter the name of the input file (stored in folder data):\n")
         try:
             graph.read_data(GraphRepresentation(representation), filename)
+            return True
         except IncorrectInputException as e:
             print(e.message)
             return False

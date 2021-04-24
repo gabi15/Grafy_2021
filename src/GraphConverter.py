@@ -1,5 +1,4 @@
 from typing import Union
-
 from GraphRepresentation import GraphRepresentation
 import numpy as np
 
