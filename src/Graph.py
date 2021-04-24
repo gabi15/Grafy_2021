@@ -45,10 +45,8 @@ class Graph:
             return False
 
     def visualise_graph_on_circle(self, save_to_file=False) -> None:
-        '''
-        Visualize graph on a circle. Return visualization or save to file.
-        :param save_to_file: if True, the graph will be saved to circular_plot.png file
-        '''
+        """Visualize graph on a circle. Return visualization or save to file.
+        :param save_to_file: if True, the graph will be saved to circular_plot.png file"""
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         # estimate graph radius
