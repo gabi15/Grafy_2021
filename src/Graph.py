@@ -1,3 +1,5 @@
+from typing import Union
+
 from GraphReader import GraphReader
 from GraphConverter import GraphConverter
 from RandomGraphGenerator import RandomGraphGenerator
@@ -14,17 +16,20 @@ class Graph:
     generator = RandomGraphGenerator()
     adjacency_matrix = None
 
-    def read_data(self, representation, filename):
+    def read_data(self, representation, filename) -> bool:
+        """Read a graph from a file using given representation"""
         self.adjacency_matrix = self.reader.read_data(representation, filename)
         if self.adjacency_matrix is None:
             return False
         return True
 
-    def get_graph(self, output_representation):
+    def get_graph(self, output_representation) -> Union[np.ndarray, list, None]:
+        """Return a graph in the given output representation"""
         return self.converter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                                             output_representation)
 
-    def save_to_file(self, representation, filename):
+    def save_to_file(self, representation, filename) -> bool:
+        """Save a graph with given representation to the file with given name"""
         filename = "data/" + filename
         output_matrix = self.get_graph(representation)
         if isinstance(output_matrix, list):
@@ -40,7 +45,7 @@ class Graph:
         else:
             return False
 
-    def visualise_graph_on_circle(self, save_to_file=False):
+    def visualise_graph_on_circle(self, save_to_file=False) -> None:
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         graph_radius = 8
@@ -60,10 +65,12 @@ class Graph:
         else:
             plt.show()
 
-    def print_graph_matrix(self):
+    def print_graph_matrix(self) -> None:
+        """Print the adjacency matrix to the console"""
         print(self.adjacency_matrix)
 
-    def generate_NL_graph(self, n, l):
+    def generate_NL_graph(self, n, l) -> bool:
+        """Generate NL graph with given number of vertices and edges"""
         graph = self.generator.random_graph_edges(n, l)
         if graph is not None:
             self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX,
@@ -72,7 +79,8 @@ class Graph:
             return False
         return True
 
-    def generate_NP_graph(self, n, p):
+    def generate_NP_graph(self, n, p) -> bool:
+        """Generate NP graph with give number of vertices and probability"""
         graph = self.generator.random_graph_probability(n, p)
         if graph is not None:
             self.adjacency_matrix = graph

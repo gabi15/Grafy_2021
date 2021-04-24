@@ -1,3 +1,4 @@
+from typing import Union
 from GraphRepresentation import GraphRepresentation
 import numpy as np
 
@@ -5,7 +6,8 @@ import numpy as np
 class GraphConverter:
 
     @staticmethod
-    def convert_graph(graph, input_representation, output_representation):
+    def convert_graph(graph, input_representation, output_representation) -> Union[np.ndarray, list, None]:
+        """Convert a graph from and to the given representations"""
         if input_representation == GraphRepresentation.ADJACENCY_MATRIX:
             return GraphConverter.convert_from_adjacency_matrix(graph, output_representation)
         elif input_representation == GraphRepresentation.ADJACENCY_LIST:
@@ -14,7 +16,8 @@ class GraphConverter:
             return GraphConverter.convert_from_incidence_matrix(graph, output_representation)
 
     @staticmethod
-    def convert_from_adjacency_matrix(graph, output_representation):
+    def convert_from_adjacency_matrix(graph, output_representation) -> Union[np.ndarray, list, None]:
+        """Convert an adjacency matrix to the given representation"""
         if output_representation == GraphRepresentation.ADJACENCY_MATRIX:
             return graph
         elif output_representation == GraphRepresentation.ADJACENCY_LIST:
@@ -23,7 +26,8 @@ class GraphConverter:
             return GraphConverter.convert_adj_mat_to_inc_mat(graph)
 
     @staticmethod
-    def convert_from_adjacency_list(adjacency_list, output_representation):
+    def convert_from_adjacency_list(adjacency_list, output_representation) -> Union[np.ndarray, list, None]:
+        """Convert an adjacency list to the given representation"""
         if output_representation == GraphRepresentation.ADJACENCY_MATRIX:
             return GraphConverter.convert_adj_list_to_adj_mat(adjacency_list)
         elif output_representation == GraphRepresentation.ADJACENCY_LIST:
@@ -32,7 +36,8 @@ class GraphConverter:
             return GraphConverter.convert_adj_list_to_inc_mat(adjacency_list)
 
     @staticmethod
-    def convert_from_incidence_matrix(graph, output_representation):
+    def convert_from_incidence_matrix(graph, output_representation) -> Union[np.ndarray, list, None]:
+        """Convert an incidence matrix to the given representation"""
         if output_representation == GraphRepresentation.ADJACENCY_MATRIX:
             return GraphConverter.convert_inc_mat_to_adj_mat(graph)
         elif output_representation == GraphRepresentation.ADJACENCY_LIST:
@@ -41,7 +46,8 @@ class GraphConverter:
             return graph
 
     @staticmethod
-    def convert_adj_list_to_adj_mat(adjacency_list):
+    def convert_adj_list_to_adj_mat(adjacency_list) -> Union[np.ndarray, None]:
+        """Convert an adjacency list to an adjacency matrix"""
         matrix_size = len(adjacency_list)
         matrix = np.zeros((matrix_size, matrix_size), dtype=int)
         try:
@@ -53,7 +59,8 @@ class GraphConverter:
             return None
 
     @staticmethod
-    def convert_inc_mat_to_adj_mat(incidence_matrix):
+    def convert_inc_mat_to_adj_mat(incidence_matrix) -> Union[np.ndarray, None]:
+        """Convert an incidence matrix to an adjacency matrix"""
         matrix_size = len(incidence_matrix)
         matrix = np.zeros((matrix_size, matrix_size), dtype=int)
         for column in incidence_matrix.transpose():
@@ -68,7 +75,8 @@ class GraphConverter:
         return matrix
 
     @staticmethod
-    def convert_adj_mat_to_adj_list(graph):
+    def convert_adj_mat_to_adj_list(graph) -> list:
+        """Convert an adjacency matrix to an adjacency list"""
         adjacency_list = []
         for row in graph:
             neighbors = []
@@ -79,7 +87,8 @@ class GraphConverter:
         return adjacency_list
 
     @staticmethod
-    def convert_adj_mat_to_inc_mat(graph):
+    def convert_adj_mat_to_inc_mat(graph) -> np.ndarray:
+        """Convert an adjacency matrix to an incidence matrix"""
         incidence_matrix = []
         row_length = graph[0].size
         for i, row in enumerate(graph):
@@ -93,7 +102,8 @@ class GraphConverter:
         return incidence_matrix
 
     @staticmethod
-    def convert_adj_list_to_inc_mat(adjacency_list):
+    def convert_adj_list_to_inc_mat(adjacency_list) -> Union[np.ndarray, None]:
+        """Convert an adjacency list to an incidence matrix"""
         try:
             adjacency_list = GraphConverter.convert_adj_list_to_adj_mat(adjacency_list)
         except:
@@ -101,7 +111,8 @@ class GraphConverter:
         return GraphConverter.convert_adj_mat_to_inc_mat(adjacency_list)
 
     @staticmethod
-    def convert_inc_mat_to_adj_list(graph):
+    def convert_inc_mat_to_adj_list(graph) -> Union[list, None]:
+        """Convert an incidence matrix to an adjacency list"""
         try:
             graph = GraphConverter.convert_inc_mat_to_adj_mat(graph)
         except:
