@@ -41,12 +41,11 @@ def main():
                     if not draw_graph():
                         print("An error occurred while printing the graph")
                 if job == 3:
-                    number_of_randomizations = int(input("Choose number of randomizations, zero for random number:\n"))
+                    number_of_randomizations = int(input("Choose number of randomizations, zero for random in range 1-100:\n"))
 
                     if not randomize_graph(number_of_randomizations):
                         print("An error occurred while randomizing graph edges")
-                    else:
-                        print("Completed. Print graph to see changes")
+
                 if job == 4:
                     sys.exit(1)
             else:
