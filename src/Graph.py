@@ -40,23 +40,52 @@ class Graph:
         else:
             return False
 
-    def visualise_graph_on_circle(self, save_to_file=False):
+    def visualise_graph_on_circle(self, save_to_file=False) -> None:
+        '''
+        Visualize graph on a circle. Return visualization or save to file.
+        :param save_to_file: if True, the graph will be saved to circular_plot.png file
+        '''
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
-        graph_radius = 8
-        plt.figure(figsize=(6, 6))
+        # estimate graph radius
+        graph_radius = nodes_number * 1.27 + 1.69
 
-        nodes_positions = {}
+        nodes = []
 
         for node in range(nodes_number):
-            nodes_positions.update({node: (math.cos(phi * node) * graph_radius, math.sin(phi * node) * graph_radius)})
+            nodes.insert(node, (math.cos(phi * node) * graph_radius, math.sin(phi * node) * graph_radius))
 
-        circular_graph = netx.from_numpy_matrix(self.adjacency_matrix)
-        netx.draw_networkx(circular_graph, nodes_positions)
+        figure, axes = plt.subplots()
+        axes.set_aspect(1)
+
+        for i in range(len(self.adjacency_matrix)):
+            for j in range(len(self.adjacency_matrix[0])):
+                if self.adjacency_matrix[i][j] == 1:
+                    (x, y) = nodes[i]
+                    (x2, y2) = nodes[j]
+                    plt.plot([x / 20 + 0.5, x2 / 20 + 0.5], [y / 20 + 0.5, y2 / 20 + 0.5], 'r-', linewidth=2, zorder=1)
+
+        i = 0
+        for node in nodes:
+            (x, y) = node
+            i += 1
+            circle_border = plt.Circle((x / 20 + 0.5, y / 20 + 0.5), radius=0.07 * nodes_number / 10, color='black',
+                                       zorder=2)
+            circle = plt.Circle((x / 20 + 0.5, y / 20 + 0.5), radius=0.06 * nodes_number / 10, color='green', zorder=3)
+            axes.add_patch(circle_border)
+            axes.add_patch(circle)
+            if nodes_number <= 20:
+                font_size = 16
+            else:
+                font_size = 20
+            axes.annotate(i, xy=(x / 20 + 0.5, y / 20 + 0.5), fontsize=font_size, color='white',
+                          verticalalignment='center', horizontalalignment='center')
+
         plt.axis("off")
+        axes.set_aspect('equal')
 
         if save_to_file:
-            plt.savefig('data/circular_plot.png')
+            plt.savefig('./../data/circular_plot.png')
         else:
             plt.show()
 
