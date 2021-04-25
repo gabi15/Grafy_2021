@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from GraphRepresentation import GraphRepresentation
 from GraphConverter import GraphConverter
 
@@ -26,7 +27,11 @@ class GraphReader:
     @staticmethod
     def is_square(matrix) -> bool:
         """Check if a matrix is square"""
-        return all(len(row) == len(matrix) for row in matrix)
+        if matrix.ndim == 0:
+            return True
+        elif matrix.ndim == 2:
+            return matrix.shape[0] == matrix.shape[1]
+        return False
 
     @staticmethod
     def is_symmetrical(matrix) -> bool:
@@ -35,21 +40,37 @@ class GraphReader:
         comparision = transpose_matrix == matrix
         return comparision.all()
 
+    @staticmethod
+    def has_zeros_on_diagonal(matrix) -> bool:
+        """Check if the matrix has zeros on diagonal"""
+        if matrix.ndim == 0:
+            if matrix == 0:
+                return True
+            return False
+        elif matrix.ndim == 2:
+            for i, row in enumerate(matrix):
+                if row[i] != 0:
+                    return False
+            return True
+        return False
+
     def read_adjacency_matrix(self) -> np.ndarray:
         """Read an adjacency matrix from a file"""
+        warnings.filterwarnings("error")
         try:
-            matrix = np.loadtxt(self.filename)
+            matrix = np.loadtxt(self.filename, dtype=int)
         except Exception as e:
             raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
-        if self.is_square(matrix):
+        if self.is_square(matrix) and self.has_zeros_on_diagonal(matrix):
             return matrix
         else:
-            raise IncorrectInputException("Incorrect input - adjacency matrix built from input is not square")
+            raise IncorrectInputException("Incorrect input - adjacency matrix built from input is not square or it has non zero values on the diagonal")
 
     def read_incidence_matrix(self) -> np.ndarray:
         """Read an incidence matrix from a file"""
+        warnings.filterwarnings("error")
         try:
-            incidence_matrix = np.loadtxt(self.filename)
+            incidence_matrix = np.loadtxt(self.filename, dtype=int)
         except Exception as e:
             raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
         matrix = GraphConverter().convert_graph(incidence_matrix, GraphRepresentation.INCIDENCE_MATRIX, GraphRepresentation.ADJACENCY_MATRIX)
