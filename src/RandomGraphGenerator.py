@@ -17,18 +17,19 @@ class BadProbability(Exception):
 class RandomGraphGenerator:
 
     @staticmethod
-    def random_graph_edges(n, m):
-        if n < 2:
+    def random_graph_edges(vertices: int, edges: int) -> np.ndarray:
+        """Generate random incidence matrix for given number of vertices and edges"""
+        if vertices < 2:
             raise BadNumberOfVertices
-        if m > n * (n - 1) / 2 or m <= 0:
+        if edges > vertices * (vertices - 1) / 2 or edges <= 0:
             raise BadNumberOfEdges
-        matrix = np.zeros((n, m), dtype=int)
+        matrix = np.zeros((vertices, edges), dtype=int)
         i = 0
-        while i < m:
-            first_rand = random.randint(0, n - 1)
-            second_rand = random.randint(0, n - 1)
+        while i < edges:
+            first_rand = random.randint(0, vertices - 1)
+            second_rand = random.randint(0, vertices - 1)
             while first_rand == second_rand:
-                second_rand = random.randint(0, n - 1)
+                second_rand = random.randint(0, vertices - 1)
             is_duplicated = False
             for j in range(i):
                 if matrix[first_rand][j] == 1 and matrix[second_rand][j] == 1:
