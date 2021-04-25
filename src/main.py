@@ -5,6 +5,7 @@ from RandomGraphGenerator import BadNumberOfVertices
 from RandomGraphGenerator import BadNumberOfEdges
 from RandomGraphGenerator import BadProbability
 import sys
+import numpy as np
 
 
 graph = Graph()
