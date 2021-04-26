@@ -43,7 +43,8 @@ class RandomGraphGenerator:
         return matrix
 
     @staticmethod
-    def random_graph_probability(n, p):  # creates a graph using the adjacency matrix
+    def random_graph_probability(n, p):
+        """Generate random adjacency matrix for given number of vertices and probability"""
         if n < 2:
             raise BadNumberOfVertices
         if p > 1 or p < 0:
@@ -56,9 +57,3 @@ class RandomGraphGenerator:
                 if r < p:
                     matrix[i][j] = matrix[j][i] = 1
         return matrix
-
-
-    # example
-    # input_n = 5
-    # input_p = 0.4
-    # random_probability_to_file(input_n,input_p, 'result.txt')
