@@ -50,7 +50,7 @@ class Graph:
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         # estimate graph radius
-        graph_radius = nodes_number * 1.27 + 1.69
+        graph_radius = nodes_number * 1.5
 
         nodes = []
 
