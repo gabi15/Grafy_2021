@@ -29,7 +29,7 @@ def main():
         while True:
             job = int(input("Choose what you want to do with the graph:\n"
                             "1 - Save the graph to the file\n"
-                            "2 - Print the graph\n"
+                            "2 - Draw the graph\n"
                             "3 - Exit the program\n"))
             if job in [1, 2, 3]:
                 if job == 1:
