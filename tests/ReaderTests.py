@@ -63,6 +63,21 @@ class ReadIncidenceMatrixTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.reader = GraphReader()
+        self.graph = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1],
+                               [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+                               [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                               [0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]], dtype=int)
 
     def test_empty_file(self):
         with self.assertRaises(IncorrectInputException) as ctx:
@@ -75,16 +90,39 @@ class ReadIncidenceMatrixTestCase(unittest.TestCase):
             self.reader.read_data(GraphRepresentation.INCIDENCE_MATRIX, "test_data\\three_vals_in_col_inc_mat.txt")
         self.assertEqual(expected, ctx.exception.message, "Messages are not equal")
 
+    def test_read_correct_input_mat(self):
+        self.assertTrue(np.array_equal(self.graph, self.reader.read_data(GraphRepresentation.INCIDENCE_MATRIX,
+                                                                         "test_data\\generated_inc_mat.txt")))
 
 class ReadAdjacencyListTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.reader = GraphReader()
+        self.graph = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1],
+                               [0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                               [0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+                               [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                               [0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                               [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]], dtype=int)
 
     def test_empty_file(self):
 
         with self.assertRaises(IncorrectInputException) as ctx:
             self.reader.read_data(GraphRepresentation.ADJACENCY_LIST, "test_data\\emptyfile.txt")
+
+    def test_read_correct_input_list(self):
+        self.assertTrue(np.array_equal(self.graph, self.reader.read_data(GraphRepresentation.ADJACENCY_LIST,
+                                                                         "test_data\\generated_adj_list.txt")))
+
 
 
 if __name__ == '__main__':

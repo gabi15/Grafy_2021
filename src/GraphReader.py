@@ -1,5 +1,6 @@
 import numpy as np
 import warnings
+import os
 from GraphRepresentation import GraphRepresentation
 from GraphConverter import GraphConverter
 
@@ -86,6 +87,8 @@ class GraphReader:
         """Read an adjacency list from a file"""
         adjacency_list = []
         try:
+            if os.stat(self.filename).st_size == 0:
+                raise Exception("File is empty")
             with open(self.filename) as f:
                 for line in f:
                     row = [int(item.strip()) for item in line.split(" ") if line.strip()]
@@ -93,7 +96,7 @@ class GraphReader:
         except Exception as e:
             raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e)) from None
         matrix = GraphConverter().convert_graph(adjacency_list, GraphRepresentation.ADJACENCY_LIST, GraphRepresentation.ADJACENCY_MATRIX)
-        if matrix:
+        if matrix is not None:
             if self.is_symmetrical(matrix):
                 return matrix
             else:
