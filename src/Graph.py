@@ -60,7 +60,7 @@ class Graph:
         plt.close()
         figure, axes = plt.subplots()
         axes.set_aspect(1)
-        figure.set_size_inches(10, 10)
+        figure.set_size_inches(8, 8)
 
         for i in range(len(self.adjacency_matrix)):
             for j in range(len(self.adjacency_matrix[0])):
