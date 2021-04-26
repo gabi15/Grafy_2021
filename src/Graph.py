@@ -57,6 +57,7 @@ class Graph:
         for node in range(nodes_number):
             nodes.insert(node, (math.cos(phi * node) * graph_radius, math.sin(phi * node) * graph_radius))
 
+        plt.close()
         figure, axes = plt.subplots()
         axes.set_aspect(1)
 
