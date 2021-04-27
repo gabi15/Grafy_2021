@@ -38,7 +38,6 @@ class Graph:
             return True
         elif isinstance(output_matrix, np.ndarray):
             with open(filename, "w+") as f:
-                # noinspection PyTypeChecker
                 np.savetxt(f, output_matrix, fmt="%i")
             return True
         else:
