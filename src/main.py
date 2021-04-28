@@ -27,7 +27,13 @@ def draw_graph() -> None:
                              "1 - Yes\n"
                              )
     if save_to_file in ["0", "1"]:
-        graph.visualise_graph_on_circle(bool(int(save_to_file)))
+        file_name = ""
+        if save_to_file == "1":
+            try:
+                file_name = input("Specify file name for the graph:\n")
+            except Exception as e:
+                print("Error: " + str(e) + "\nPlease try again\n")
+        graph.visualise_graph_on_circle(bool(int(save_to_file)), file_name)
     else:
         print("Wrong input, try again")
         draw_graph()
