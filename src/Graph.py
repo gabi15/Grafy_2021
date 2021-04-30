@@ -97,8 +97,8 @@ class Graph:
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""
         graph, representation = data
-        self.adjacency_matrix = GraphConverter.convert_graph(graph, GraphRepresentation.ADJACENCY_MATRIX,
-                                                             representation)
+        self.adjacency_matrix = GraphConverter.convert_graph(graph, representation,
+                                                             GraphRepresentation.ADJACENCY_MATRIX)
 
     def __str__(self) -> str:
         """Returns the adjacency matrix"""
