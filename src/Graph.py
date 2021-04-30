@@ -1,19 +1,18 @@
+import math
 from typing import Union
 
-from GraphReader import GraphReader
-from GraphConverter import GraphConverter
-from RandomGraphGenerator import RandomGraphGenerator
-from GraphRepresentation import GraphRepresentation
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+import GraphConverter
+from GraphReader import GraphReader
+from GraphRepresentation import GraphRepresentation
+
 
 class Graph:
-    reader = GraphReader()
-    converter = GraphConverter()
-    generator = RandomGraphGenerator()
-    adjacency_matrix = None
+    def __init__(self):
+        self.reader = GraphReader()
+        self.adjacency_matrix = None
 
     def read_data(self, representation, filename) -> bool:
         """Read a graph from a file using given representation"""
@@ -24,7 +23,7 @@ class Graph:
 
     def get_graph(self, output_representation) -> Union[np.ndarray, list, None]:
         """Return a graph in the given output representation"""
-        return self.converter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
+        return GraphConverter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                                             output_representation)
 
     def save_to_file(self, representation, filename) -> bool:
@@ -44,9 +43,10 @@ class Graph:
         else:
             return False
 
-    def visualise_graph_on_circle(self, save_to_file=False) -> None:
+    def visualise_graph_on_circle(self, save_to_file, file_name) -> None:
         """Visualize graph on a circle. Return visualization or save to file.
-        :param save_to_file: if True, the graph will be saved to circular_plot.png file"""
+        :param save_to_file: if True, the graph will be saved to file_name file
+        :param file_name file name for the graph"""
         nodes_number = len(self.adjacency_matrix)
         phi = 2 * math.pi / nodes_number
         # estimate graph radius
@@ -89,28 +89,17 @@ class Graph:
         axes.set_aspect('equal')
 
         if save_to_file:
-            plt.savefig('data/circular_plot.png')
+            plt.rcParams['savefig.format'] = 'png'
+            plt.savefig("data/" + file_name)
         else:
             plt.show()
 
-    def print_graph_matrix(self) -> None:
-        """Print the adjacency matrix to the console"""
-        print(self.adjacency_matrix)
+    def set_graph(self, data) -> None:
+        """Sets the adjacency matrix"""
+        graph, representation = data
+        self.adjacency_matrix = GraphConverter.convert_graph(graph, GraphRepresentation.ADJACENCY_MATRIX,
+                                                             representation)
 
-    def generate_NL_graph(self, n, l) -> bool:
-        """Generate NL graph with given number of vertices and edges"""
-        graph = self.generator.random_graph_edges(n, l)
-        if graph is not None:
-            self.adjacency_matrix = self.converter.convert_graph(graph, GraphRepresentation.INCIDENCE_MATRIX,
-                                                                 GraphRepresentation.ADJACENCY_MATRIX)
-        if self.adjacency_matrix is None:
-            return False
-        return True
-
-    def generate_NP_graph(self, n, p) -> bool:
-        """Generate NP graph with give number of vertices and probability"""
-        graph = self.generator.random_graph_probability(n, p)
-        if graph is not None:
-            self.adjacency_matrix = graph
-            return True
-        return False
+    def __str__(self) -> str:
+        """Returns the adjacency matrix"""
+        return '\n'.join([' '.join([str(u) for u in row]) for row in self.adjacency_matrix])
