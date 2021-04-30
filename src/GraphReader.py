@@ -3,47 +3,11 @@ import warnings
 import numpy as np
 
 import GraphConverter
+from GraphConverter import IncorrectInputException
+from GraphConverter import has_zeros_on_diagonal
+from GraphConverter import is_symmetrical
+from GraphConverter import is_square
 from GraphRepresentation import GraphRepresentation
-
-
-class IncorrectInputException(Exception):
-    """Exception raised in case of bad input"""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return "Incorrect input - " + self.message
-
-
-def is_square(matrix) -> bool:
-    """Check if a matrix is square"""
-    if matrix.ndim == 0:
-        return True
-    elif matrix.ndim == 2:
-        return matrix.shape[0] == matrix.shape[1]
-    return False
-
-
-def is_symmetrical(matrix) -> bool:
-    """Check if the matrix is symmetrical"""
-    transpose_matrix = matrix.transpose()
-    comparision = transpose_matrix == matrix
-    return comparision.all()
-
-
-def has_zeros_on_diagonal(matrix) -> bool:
-    """Check if the matrix has zeros on diagonal"""
-    if matrix.ndim == 0:
-        if matrix == 0:
-            return True
-        return False
-    elif matrix.ndim == 2:
-        for i, row in enumerate(matrix):
-            if row[i] != 0:
-                return False
-        return True
-    return False
 
 
 class GraphReader:
@@ -72,24 +36,20 @@ class GraphReader:
     def read_adjacency_matrix(self) -> np.ndarray:
         """Read an adjacency matrix from a file"""
         matrix = self.read_from_file()
-        if is_square(matrix) and has_zeros_on_diagonal(matrix):
-            return matrix
-        else:
-            raise IncorrectInputException(
-                "adjacency matrix built from input is not square or it has non zero values on the diagonal")
+        if not is_square(matrix):
+            raise IncorrectInputException("Adjacency matrix built from input is not square")
+        if not is_symmetrical(matrix):
+            raise IncorrectInputException("Adjacency matrix built from input is not symmetrical")
+        if not has_zeros_on_diagonal(matrix):
+            raise IncorrectInputException("Adjacency matrix built from input has non zero value on diagonal")
+        return matrix
 
     def read_incidence_matrix(self) -> np.ndarray:
         """Read an incidence matrix from a file"""
         incidence_matrix = self.read_from_file()
         matrix = GraphConverter.convert_graph(incidence_matrix, GraphRepresentation.INCIDENCE_MATRIX,
                                               GraphRepresentation.ADJACENCY_MATRIX)
-        if matrix is not None:
-            if is_symmetrical(matrix):
-                return matrix
-            else:
-                raise IncorrectInputException("adjacency matrix built from input is not symmetrical")
-        else:
-            raise IncorrectInputException("column of the input matrix should contain two values")
+        return matrix
 
     def read_adjacency_list(self) -> np.ndarray:
         """Read an adjacency list from a file"""
@@ -105,9 +65,5 @@ class GraphReader:
             raise IncorrectInputException("an error occurred while reading the file:\n" + str(e))
         matrix = GraphConverter.convert_graph(adjacency_list, GraphRepresentation.ADJACENCY_LIST,
                                               GraphRepresentation.ADJACENCY_MATRIX)
-        if matrix is not None:
-            if is_symmetrical(matrix):
-                return matrix
-            else:
-                raise IncorrectInputException("adjacency matrix built from input is not symmetrical")
-        raise IncorrectInputException("list index is bigger than the number of vertices")
+        return matrix
+

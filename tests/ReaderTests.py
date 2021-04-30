@@ -33,21 +33,21 @@ class ReadAdjacencyMatrixTestCase(unittest.TestCase):
             self.reader.read_data(GraphRepresentation.ADJACENCY_MATRIX, "test_data/emptyfile.txt")
 
     def test_not_square_mat(self):
-        expected = "Incorrect input - adjacency matrix built from input is not square or it has non zero values on the diagonal"
+        expected = "Incorrect input - Adjacency matrix built from input is not square"
 
         with self.assertRaises(IncorrectInputException) as ctx:
             self.reader.read_data(GraphRepresentation.ADJACENCY_MATRIX, "test_data/not_square_adj_mat.txt")
         self.assertEqual(expected, str(ctx.exception), "Messages are not equal")
 
     def test_non_zero_on_diagonal(self):
-        expected = "Incorrect input - adjacency matrix built from input is not square or it has non zero values on the diagonal"
+        expected = "Incorrect input - Adjacency matrix built from input has non zero value on diagonal"
 
         with self.assertRaises(IncorrectInputException) as ctx:
             self.reader.read_data(GraphRepresentation.ADJACENCY_MATRIX, "test_data/non_zero_on_diag.txt")
         self.assertEqual(expected, str(ctx.exception), "Messages are not equal")
 
     def test_one_val_in_file(self):
-        expected = "Incorrect input - adjacency matrix built from input is not square or it has non zero values on the diagonal"
+        expected = "Incorrect input - Adjacency matrix built from input has non zero value on diagonal"
 
         with self.assertRaises(IncorrectInputException) as ctx:
             self.reader.read_data(GraphRepresentation.ADJACENCY_MATRIX, "test_data/one.txt")
@@ -85,7 +85,7 @@ class ReadIncidenceMatrixTestCase(unittest.TestCase):
             self.reader.read_data(GraphRepresentation.INCIDENCE_MATRIX, "test_data/emptyfile.txt")
 
     def test_wrong_column_inc_mat(self):
-        expected = "Incorrect input - column of the input matrix should contain two values"
+        expected = "Incorrect input - The edge should connect two different vertices"
 
         with self.assertRaises(IncorrectInputException) as ctx:
             self.reader.read_data(GraphRepresentation.INCIDENCE_MATRIX, "test_data/three_vals_in_col_inc_mat.txt")

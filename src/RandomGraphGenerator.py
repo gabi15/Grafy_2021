@@ -24,7 +24,7 @@ class BadProbability(Exception):
         return "The value of probability is less than 0 or more than 1"
 
 
-def random_graph_edges(vertices: int, edges: int) -> tuple[np.ndarray, GraphRepresentation]:
+def random_graph_edges(vertices: int, edges: int) -> (np.ndarray, GraphRepresentation):
     """Generate random incidence matrix for given number of vertices and edges"""
     if vertices < 2:
         raise BadNumberOfVertices
@@ -49,7 +49,7 @@ def random_graph_edges(vertices: int, edges: int) -> tuple[np.ndarray, GraphRepr
     return matrix, GraphRepresentation.INCIDENCE_MATRIX
 
 
-def random_graph_probability(vertices: int, probability: float) -> tuple[np.ndarray, GraphRepresentation]:
+def random_graph_probability(vertices: int, probability: float) -> (np.ndarray, GraphRepresentation):
     """Generate random adjacency matrix for given number of vertices and probability"""
     if vertices < 2:
         raise BadNumberOfVertices
