@@ -6,11 +6,17 @@ import GraphRepresentation as gr
 
 
 def draw_random_weights(adj_mat):
+    """Generate random weights using given adjacency matrix
+    :param adj_mat: given adjacency matrix of a non-weighted graph
+    :return: adjacency matrix with weighted vertices
+    """
     adj_mat_size = len(adj_mat)
     for i in range(adj_mat_size):
-        for j in range(adj_mat_size):
-            if adj_mat[i][j] == 1:
-                adj_mat[i][j] = random.randint(1, 10)
+        for j in range(i):
+            if i != j and adj_mat[i][j] == 1:
+                random_weight = random.randint(1, 10)
+                adj_mat[i][j] = random_weight
+                adj_mat[j][i] = random_weight
     return adj_mat
 
 
