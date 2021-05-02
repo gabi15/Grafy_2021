@@ -100,83 +100,85 @@ class Graph:
         """Visualize weighted graph"""
         G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
         layout = nx.spring_layout(G)
-        nx.draw(G, layout, with_labels=True)
         labels = nx.get_edge_attributes(G, "weight")
+        nx.draw(G, layout, with_labels=True)
         nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
         plt.show()
 
-    def initialize_dijkstra_distances_positions(self, s) -> (list, list):
+    def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
         """Initialize distances and positions arrays to perform Dijkstra's algorithm
-        :param s: node to start with
+        :param starting_node: node to start with
         """
-        ds = []
-        ps = []
+        distances = []
+        positions = []
         for _ in self.adjacency_matrix:
-            ds.append(sys.maxsize)
-            ps.append(-1)
+            distances.append(sys.maxsize)
+            positions.append(-1)
 
-        ds[s] = 0
-        return ds, ps
+        distances[starting_node] = 0
+        return distances, positions
 
-    def dijkstra(self, s) -> (list, list):
+    def relax_dijkstra(self, distances, positions, u, u_neighbours):
+        for v in u_neighbours:
+            new_dist = self.adjacency_matrix[u][v] + distances[u]
+
+            if distances[v] > new_dist:
+                distances[v] = new_dist
+                positions[v] = u
+
+        return distances, positions
+
+    def dijkstra(self, starting_node) -> (list, list):
         """ Perform Dijkstra's algorithm starting with given node s
-        :param s: given node to start with
+        :param starting_node: given node to start with
         """
-        (ds, ps) = self.initialize_dijkstra_distances_positions(s)
-        S = []
-        while len(S) != len(self.adjacency_matrix):
-            temp_dist = [e if i not in S else sys.maxsize for i, e in enumerate(ds)]
-            u = temp_dist.index(min(temp_dist))
-            S.append(u)
+        (distances, positions) = self.initialize_dijkstra_distances_positions(starting_node)
+        ready_nodes = []
+        while len(ready_nodes) != len(self.adjacency_matrix):
+            not_ready_nodes = [val if i not in ready_nodes else sys.maxsize for i, val in enumerate(distances)]
+            u = not_ready_nodes.index(min(not_ready_nodes))
+            ready_nodes.append(u)
 
-            neighbours = []
-            for i, val in enumerate(self.adjacency_matrix[u]):
-                if val != 0:
-                    neighbours.append(i)
+            u_neighbours = []
+            [u_neighbours.append(i) if val != 0 else None for i, val in enumerate(self.adjacency_matrix[u])]
 
-            for idx in neighbours:
-                v = idx
-                new_dist = self.adjacency_matrix[u][v] + ds[u]
+            distances, positions = self.relax_dijkstra(distances, positions, u, u_neighbours)
 
-                if ds[v] > new_dist:
-                    ds[v] = new_dist
-                    ps[v] = u
+        return distances, positions
 
-        return ds, ps
-
-    def print_dijkstra(self, s=0) -> bool:
-        """ Print result of Dijkstra's algorithm to standard output
-        :param s: given node to start with
+    def print_dijkstra(self, starting_node=0) -> bool:
+        """ Print result of Dijkstra's algorithm to standard output starting with either node 0 or given node
+        :param starting_node: given node to start with
         """
-        (ds, ps) = self.dijkstra(s)
-        result = f'START: s = {s}:'
+        (distances, positions) = self.dijkstra(starting_node)
+        result_paths = f'START: s = {starting_node}:'
 
         for index in range(len(self.adjacency_matrix)):
-            if ds[index] == sys.maxsize:
+            if distances[index] == sys.maxsize:
                 return False
 
-            result += f'\nd({index})={ds[index]}\t\t==> ['
-            trail = [index]
+            result_paths += f'\nd({index})={distances[index]}\t\t==> ['
+            node = [index]
 
-            while ps[index] > 0:
-                trail.append(ps[index])
-                index = ps[index]
+            while positions[index] > 0:
+                node.append(positions[index])
+                index = positions[index]
 
-            result += ' - '.join(map(lambda v: str(v), reversed(trail)))
-            result += ']'
-        print(result)
+            result_paths += ' - '.join(map(lambda v: str(v), reversed(node)))
+            result_paths += ']'
+        print(result_paths)
         return True
 
-    def find_distance_matrix(self) -> np.ndarray:
-        """Find the distance between every two nodes"""
-        n = len(self.adjacency_matrix)
-        distance_matrix = np.zeros((n, n))
+    def find_distances_matrix(self) -> np.ndarray:
+        """Find the distances between every two nodes"""
+        adj_mat_size = len(self.adjacency_matrix)
+        distances_matrix = np.zeros((adj_mat_size, adj_mat_size))
 
-        for i in range(n):
-            ds, ps = self.dijkstra(s=i)
-            distance_matrix[i] = ds
+        for node in range(adj_mat_size):
+            distances, _ = self.dijkstra(starting_node=node)
+            distances_matrix[node] = distances
 
-        return distance_matrix
+        return distances_matrix
 
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""
