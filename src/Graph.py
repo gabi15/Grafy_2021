@@ -1,13 +1,14 @@
 import math
+from copy import deepcopy
 from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 import GraphConverter
 from GraphReader import GraphReader
 from GraphRepresentation import GraphRepresentation
-
 
 class Graph:
     def __init__(self):
@@ -93,6 +94,101 @@ class Graph:
             plt.savefig("data/" + file_name)
         else:
             plt.show()
+
+    def randomize_graph_edges(self, number_of_randomizations):
+        """
+        Corner cases:
+        - perform 100 randomizations,
+        - random number of randomizations,
+        - randomize graph where randomization is not possible (i. e. [3 3 3 3] or [2 2 2]).
+        Perform number_of_randomizations randomizations and return True if operation succeeded.
+        :param number_of_randomizations: number of randomizations to perform, if 0 the number should be random
+        :return: True if randomization succeeded, False otherwise
+        """
+        adjacency_list = GraphConverter.convert_adj_mat_to_adj_list(self.adjacency_matrix)
+        adjacency_list_copy = deepcopy(adjacency_list)
+        flattened_list = [item for sublist in adjacency_list for item in sublist]
+
+        # 3 or less vertices - to few to randomize
+        if len(adjacency_list) <= 3:
+            return False
+
+        # draw number of randomization, because one wasn't specified
+        if number_of_randomizations == 0:
+            number_of_randomizations = random.randint(1, 100)
+
+        # estimate number or randomizations that is possible to perform
+        free_edges_counter = 0
+        n = len(adjacency_list)
+        for i in adjacency_list:
+            free_edges_counter += n - 1 - len(i)
+        free_edges_counter /= 2
+
+        performed_randomizations = 0
+        fails = 0
+
+        while performed_randomizations < number_of_randomizations:
+            [performed_randomizations, fails] = self.randomize(adjacency_list_copy, flattened_list,
+                                                               performed_randomizations, fails, free_edges_counter)
+        if performed_randomizations == fails:
+            print("Graph cannot be randomized.")
+        else:
+            print("Randomizations performed: " + str(performed_randomizations - fails))
+        self.adjacency_matrix = GraphConverter.convert_adj_list_to_adj_mat(adjacency_list_copy)
+        return True
+
+    @staticmethod
+    def randomize(adjacency_list_copy, flattened_list, performed_randomizations, fails, free_edges_counter):
+        """
+        Randomize graph. Increment fails value if randomization fails.
+        :param adjacency_list_copy: deepcopy of adjacency list
+        :param flattened_list: flat list made from adjacency_list for drawing nodes
+        :param performed_randomizations: number of tried randomizations
+        :param fails: number of failed randomizations (either drawing eligible nodes took to long or randomization is not possible)
+        :param free_edges_counter: number of possible randomizations in one go
+        :return: updated values of performed randomizations and fails
+        """
+        # check if we didn't fall into an endless loop
+        endless_loop_flag = 0
+
+        # if we still should perform randomizing or didn't fall into endless loop
+        while endless_loop_flag <= free_edges_counter * 4:
+            first_start, first_end, second_start, second_end = random.sample(set(flattened_list), k=4)
+
+            # random nodes aren't connected in a way that would prevent randomizing (when one node is connected to two other)
+            if (first_start in adjacency_list_copy[first_end - 1]) and (
+                    second_start in adjacency_list_copy[second_end - 1]):
+                if (first_start not in adjacency_list_copy[second_end - 1]) and (
+                        second_start not in adjacency_list_copy[first_end - 1]):
+                    # remove existing connections
+                    adjacency_list_copy[first_start - 1].remove(first_end)
+                    adjacency_list_copy[first_end - 1].remove(first_start)
+                    adjacency_list_copy[second_start - 1].remove(second_end)
+                    adjacency_list_copy[second_end - 1].remove(second_start)
+
+                    # add new connections
+                    adjacency_list_copy[first_start - 1].append(second_end)
+                    adjacency_list_copy[second_end - 1].append(first_start)
+                    adjacency_list_copy[second_start - 1].append(first_end)
+                    adjacency_list_copy[first_end - 1].append(second_start)
+                    return [performed_randomizations + 1, fails]
+
+                # other randomization is possible
+                elif (first_start not in adjacency_list_copy[second_start - 1]) and (
+                        second_end not in adjacency_list_copy[first_end - 1]):
+                    adjacency_list_copy[first_start - 1].remove(first_end)
+                    adjacency_list_copy[first_end - 1].remove(first_start)
+                    adjacency_list_copy[second_start - 1].remove(second_end)
+                    adjacency_list_copy[second_end - 1].remove(second_start)
+
+                    adjacency_list_copy[first_start - 1].append(second_start)
+                    adjacency_list_copy[second_start - 1].append(first_start)
+                    adjacency_list_copy[second_end - 1].append(first_end)
+                    adjacency_list_copy[first_end - 1].append(second_end)
+                    return [performed_randomizations + 1, fails]
+            endless_loop_flag += 1
+
+        return [performed_randomizations + 1, fails + 1]
 
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""

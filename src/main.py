@@ -98,20 +98,32 @@ def main() -> None:
             job = input("Choose what you want to do with the graph:\n"
                             "1 - Save the graph to the file\n"
                             "2 - Draw the graph\n"
-                            "3 - Exit the program\n"
+                            "3 - Randomize graph edges\n"
+                            "4 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3"]:
+            if job in ["1", "2", "3", "4"]:
                 if job == "1":
                     save_graph()
                 if job == "2":
                     draw_graph()
-                if job == "3":
+                if job == 3:
+                    number_of_randomizations = int(
+                        input("Choose number of randomizations, zero for random in range 1-100:\n"))
+
+                    if not randomize_graph(number_of_randomizations):
+                        print("An error occurred while randomizing graph edges")
+
+                if job == 4:
                     sys.exit(1)
             else:
                 main()
     else:
         print("Wrong option selected, try again")
         main()
+
+
+def randomize_graph(number_of_randomizations):
+    return graph.randomize_graph_edges(number_of_randomizations)
 
 
 if __name__ == "__main__":
