@@ -204,7 +204,14 @@ class Graph:
         """Returns the adjacency matrix"""
         return '\n'.join([' '.join([str(u) for u in row]) for row in self.adjacency_matrix])
 
-    def DFS(self, start, visited, visited_collected):
+    def DFS(self, start, visited, visited_collected) -> None:
+        """
+        Runs Depth First Search algorithm
+        :param start: starting node
+        :param visited: list needed to recursively call function
+        :param visited_collected: list of visited nodes
+        :return:
+        """
         # add current node
         visited_collected.append(start)
 
@@ -218,10 +225,12 @@ class Graph:
             if self.adjacency_matrix[start][i] == 1 and not visited[i]:
                 self.DFS(i, visited, visited_collected)
 
-    # finds connected components in graph and returns a list: for example [0,0,1] means that vertices
-    # 0 and 1 are connected, vertex 3 is alone
-    # to work properly graph must have adjacency matrix initialized
-    def find_components(self):
+    def find_components(self) -> np.ndarray:
+        """
+        finds connected components in graph and returns a list: for example [0,0,1] means that vertices
+        0 and 1 are connected, vertex 3 is alone to work properly graph must have adjacency matrix initialized
+        :return: list of connected components
+        """
         nr = 0
         comp = np.zeros((self.vertices,), dtype=int)  # this will save
         for i in range(self.vertices):
@@ -237,7 +246,12 @@ class Graph:
 
     # prints connected components, takes result of 'find components' method as an argument
     @staticmethod
-    def print_components(comp):
+    def print_components(comp) -> None:
+        """
+        Prints all connected components in a neat way and finds the biggest one
+        :param comp: a list returned from find_components function
+        :return:
+        """
         cc_lengths = []
         searchval = 1
         while True:
