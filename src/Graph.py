@@ -180,6 +180,36 @@ class Graph:
 
         return distances_matrix
 
+    def find_center(self) -> int:
+        """Find the node that has the smallest sum of distances to other nodes"""
+        distances_matrix = self.find_distances_matrix()
+        min_sum = max(sum(distances_matrix))
+        current_index = 0
+        node_index = -1
+
+        for i in distances_matrix:
+            if sum(i) < min_sum:
+                min_sum = sum(i)
+                node_index = current_index
+            current_index += 1
+
+        return node_index
+
+    def find_minimax_center(self) -> int:
+        """Find the node that has the smallest distance to the most distant node"""
+        distances_matrix = self.find_distances_matrix()
+        min_max = max(sum(distances_matrix))
+        current_index = 0
+        node_index = -1
+
+        for i in distances_matrix:
+            if max(i) < min_max:
+                min_max = max(i)
+                node_index = current_index
+            current_index += 1
+
+        return node_index
+
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""
         graph, representation = data
