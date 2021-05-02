@@ -2,6 +2,7 @@ import math
 from typing import Union
 
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 
 import GraphConverter
@@ -93,6 +94,14 @@ class Graph:
             plt.savefig("data/" + file_name)
         else:
             plt.show()
+
+    def visualize_graph_with_weights(self):
+        G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
+        layout = nx.spring_layout(G)
+        nx.draw(G, layout, with_labels=True)
+        labels = nx.get_edge_attributes(G, "weight")
+        nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
+        plt.show()
 
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""
