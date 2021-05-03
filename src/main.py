@@ -99,21 +99,23 @@ def main() -> None:
                             "1 - Save the graph to the file\n"
                             "2 - Draw the graph\n"
                             "3 - Randomize graph edges\n"
-                            "4 - Exit the program\n"
+                            "4 - Find connected components\n"
+                            "5 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3", "4"]:
+            if job in ["1", "2", "3", "4", "5"]:
                 if job == "1":
                     save_graph()
                 if job == "2":
                     draw_graph()
-                if job == 3:
+                if job == "3":
                     number_of_randomizations = int(
                         input("Choose number of randomizations, zero for random in range 1-100:\n"))
 
                     if not randomize_graph(number_of_randomizations):
                         print("An error occurred while randomizing graph edges")
-
-                if job == 4:
+                if job == "4":
+                    find_connected_components()
+                if job == "5":
                     sys.exit(1)
             else:
                 main()
@@ -124,6 +126,12 @@ def main() -> None:
 
 def randomize_graph(number_of_randomizations):
     return graph.randomize_graph_edges(number_of_randomizations)
+
+
+def find_connected_components():
+    res = graph.find_components()
+    print("Connected components of this graph")
+    graph.print_components(res)
 
 
 if __name__ == "__main__":

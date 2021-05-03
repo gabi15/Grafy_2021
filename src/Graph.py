@@ -10,14 +10,17 @@ import GraphConverter
 from GraphReader import GraphReader
 from GraphRepresentation import GraphRepresentation
 
+
 class Graph:
     def __init__(self):
         self.reader = GraphReader()
         self.adjacency_matrix = None
+        self.vertices = -1
 
     def read_data(self, representation, filename) -> bool:
         """Read a graph from a file using given representation"""
         self.adjacency_matrix = self.reader.read_data(representation, filename)
+        self.vertices = self.adjacency_matrix.shape[0]
         if self.adjacency_matrix is None:
             return False
         return True
@@ -195,7 +198,72 @@ class Graph:
         graph, representation = data
         self.adjacency_matrix = GraphConverter.convert_graph(graph, representation,
                                                              GraphRepresentation.ADJACENCY_MATRIX)
+        self.vertices = self.adjacency_matrix.shape[0]
 
     def __str__(self) -> str:
         """Returns the adjacency matrix"""
         return '\n'.join([' '.join([str(u) for u in row]) for row in self.adjacency_matrix])
+
+    def DFS(self, start, visited, visited_collected) -> None:
+        """
+        Runs Depth First Search algorithm
+        :param start: starting node
+        :param visited: list needed to recursively call function
+        :param visited_collected: list of visited nodes
+        :return:
+        """
+        # add current node
+        visited_collected.append(start)
+
+        # Set current node as visited
+        visited[start] = True
+
+        # For every node of the graph
+        for i in range(self.vertices):
+
+            # If some node is adjacent to the current node and it has not already been visited
+            if self.adjacency_matrix[start][i] == 1 and not visited[i]:
+                self.DFS(i, visited, visited_collected)
+
+    def find_components(self) -> np.ndarray:
+        """
+        finds connected components in graph and returns a list: for example [0,0,1] means that vertices
+        0 and 1 are connected, vertex 3 is alone to work properly graph must have adjacency matrix initialized
+        :return: list of connected components
+        """
+        nr = 0
+        comp = np.zeros((self.vertices,), dtype=int)  # this will save
+        for i in range(self.vertices):
+            visited_collected = []
+            if comp[i] == 0:
+                nr += 1
+                comp[i] = nr
+                visited = [False] * self.vertices
+                self.DFS(i, visited, visited_collected)
+                for el in visited_collected:
+                    comp[el] = nr
+        return comp
+
+    # prints connected components, takes result of 'find components' method as an argument
+    @staticmethod
+    def print_components(comp) -> None:
+        """
+        Prints all connected components in a neat way and finds the biggest one
+        :param comp: a list returned from find_components function
+        :return:
+        """
+        cc_lengths = []
+        searchval = 1
+        while True:
+            connected_comp = [x+1 for x in np.where(comp == searchval)[0]]
+            if len(connected_comp) == 0:
+                break
+            cc_lengths.append(len(connected_comp))
+            print("{}) ".format(searchval), end='')
+            print(*connected_comp)
+            searchval += 1
+
+        m = max(cc_lengths)
+        indices = [i + 1 for i, j in enumerate(cc_lengths) if j == m]
+        print("The biggest connected component has number ", end='')
+        print(*indices)
