@@ -134,11 +134,11 @@ class Graph:
             [performed_randomizations, fails] = self.randomize(adjacency_list_copy, flattened_list,
                                                                performed_randomizations, fails, free_edges_counter)
         if performed_randomizations == fails:
-            print("Graph cannot be randomized.")
+            return False
         else:
             print("Randomizations performed: " + str(performed_randomizations - fails))
-        self.adjacency_matrix = GraphConverter.convert_adj_list_to_adj_mat(adjacency_list_copy)
-        return True
+            self.adjacency_matrix = GraphConverter.convert_adj_list_to_adj_mat(adjacency_list_copy)
+            return True
 
     @staticmethod
     def randomize(adjacency_list_copy, flattened_list, performed_randomizations, fails, free_edges_counter):
