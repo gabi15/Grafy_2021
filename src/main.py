@@ -139,14 +139,19 @@ def find_connected_components():
 
 
 def generate_euler_graph():
+    number_of_vertices = 0
+    try:
+        number_of_vertices = int(input("Choose number of vertices in range 4-100:\n"))
+        if number_of_vertices <= 3 or number_of_vertices > 50:
+            raise ValueError("Number must be between 4-100")
+    except ValueError as e:
+        print(repr(e))
+        generate_euler_graph()
+
     print(100*'-')
-    adj_list = random_euler_graph(8)
-    graph.set_graph((adj_list,GraphRepresentation.ADJACENCY_LIST))
+    adj_list = random_euler_graph(number_of_vertices)
+    graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
     dict_graph = DictGraph(adj_list)
-    # print("Graph in a form of adjacency_list")
-    # for c,el in enumerate(adj_list, 1):
-    #     print("{}) ".format(c), end="")
-    #     print(*el,sep=", ")
     print("Found Euler's cycle:")
     dict_graph.print_euler_cycle(1)
     print(100 * '-')

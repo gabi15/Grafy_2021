@@ -1,7 +1,7 @@
 from Graph import *
 from GraphRepresentation import *
 from GraphConverter import convert_graph
-import random
+from random import randrange, randint
 
 
 class DictGraph:
@@ -86,23 +86,25 @@ class DictGraph:
 def random_even_graphical_sequence(n):
     graphical_sequence = []
     for i in range(n):
-        rand_even_num = random.randrange(2, n, 2)
+        rand_even_num = randrange(2, n, 2)
         graphical_sequence.append(rand_even_num)
+    while not GraphReader().is_graphical_sequence(graphical_sequence):
+        graphical_sequence = random_even_graphical_sequence(n)
     return graphical_sequence
 
 
 def random_euler_graph(n):
-    graphical_sequence = random_even_graphical_sequence(n)
-    while not GraphReader().is_graphical_sequence(graphical_sequence):
-        graphical_sequence = random_even_graphical_sequence(n)
-
+    randomizable_flag = False
     euler_graph = Graph()
-    res = GraphConverter.convert_graph(graphical_sequence, GraphRepresentation.GRAPHICAL_SEQUENCE,
-                                       GraphRepresentation.ADJACENCY_LIST)
-    euler_graph.set_graph((res, GraphRepresentation.ADJACENCY_LIST))
+    graphical_sequence = []
+    while not randomizable_flag:
+        graphical_sequence = random_even_graphical_sequence(n)
+        result = GraphConverter.convert_graph(graphical_sequence, GraphRepresentation.GRAPHICAL_SEQUENCE,
+                                              GraphRepresentation.ADJACENCY_LIST)
+        euler_graph.set_graph((result, GraphRepresentation.ADJACENCY_LIST))
+        randomizable_flag = euler_graph.randomize_graph_edges(17)
     print("Random graphical sequence: ", end='')
     print(*graphical_sequence)
-    euler_graph.randomize_graph_edges(17)
-    adj_list = convert_graph(euler_graph.adjacency_matrix,GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    adj_list = convert_graph(euler_graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
+                             GraphRepresentation.ADJACENCY_LIST)
     return adj_list
-
