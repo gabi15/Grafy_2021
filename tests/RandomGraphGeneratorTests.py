@@ -34,6 +34,28 @@ class TestRandomGraphGenerator(unittest.TestCase):
         with self.assertRaises(BadProbability):
             random_graph_probability(3, -7)
 
+    def test_random_graph_regular_bad_vertices(self):
+        with self.assertRaises(BadNumberOfVertices):
+            random_graph_regular(0, 4)
+
+    def test_random_graph_regular_bad_degree(self):
+        with self.assertRaises(BadDegree):
+            random_graph_regular(4, -7)
+        with self.assertRaises(BadDegree):
+            random_graph_regular(4, 4)
+
+    def test_random_graph_regular_bad_values(self):
+        with self.assertRaises(BadNKValues):
+            random_graph_regular(5, 3)
+
+    def test_random_graph_regular(self):
+        n = 5
+        k = 4
+        result = random_graph_regular(n, k)[0]
+        self.assertTrue(result.sum() == (n * k))
+        self.assertEqual(result.diagonal().sum(), 0)
+        self.assertEqual(result.shape, (n, n))
+
 
 if __name__ == '__main__':
     unittest.main()
