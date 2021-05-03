@@ -106,7 +106,4 @@ class GraphReader:
         elif not self.is_graphical_sequence(graphical_sequence[0]):
             raise IncorrectInputException("Incorrect input - sequence is not graphical")
         else:
-            return GraphConverter.convert_graph(
-                GraphConverter().convert_graph(graphical_sequence[0], GraphRepresentation.GRAPHICAL_SEQUENCE,
-                                               GraphRepresentation.ADJACENCY_LIST), GraphRepresentation.ADJACENCY_LIST,
-                GraphRepresentation.ADJACENCY_MATRIX)
+            return GraphConverter.convert_graph(GraphConverter.convert_graph(graphical_sequence[0], GraphRepresentation.GRAPHICAL_SEQUENCE, GraphRepresentation.ADJACENCY_LIST), GraphRepresentation.ADJACENCY_LIST, GraphRepresentation.ADJACENCY_MATRIX)
