@@ -112,7 +112,7 @@ def main() -> None:
                         input("Choose number of randomizations, zero for random in range 1-100:\n"))
 
                     if not randomize_graph(number_of_randomizations):
-                        print("An error occurred while randomizing graph edges")
+                        print("Graph cannot be randomized.")
                 if job == "4":
                     find_connected_components()
                 if job == "5":
