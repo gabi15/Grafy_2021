@@ -89,7 +89,7 @@ def convert_from_incidence_matrix(graph, output_representation) -> Union[np.ndar
 
 def convert_from_graphical_sequence(graphical_sequence, output_representation):
     if output_representation == GraphRepresentation.ADJACENCY_LIST:
-        return convert_edge_list_to_adj_list(convert_graph_seq_to_edge_list(graphical_sequence))
+        return convert_edge_list_to_adj_list(convert_graph_seq_to_edge_list(graphical_sequence), len(graphical_sequence))
 
 
 def convert_adj_list_to_adj_mat(adjacency_list) -> np.ndarray:
@@ -195,13 +195,9 @@ def convert_graph_seq_to_edge_list(graphical_sequence):
     return adjacency_list
 
 
-def convert_edge_list_to_adj_list(edge_list):
-    edges = []
-    for i in range(0, max(map(lambda x: x[-1], edge_list))):
-        edges.append([])
-
+def convert_edge_list_to_adj_list(edge_list,n):
+    edges = [[] for _ in range(n)]
     for i in edge_list:
         edges[i[0] - 1].append(i[1])
         edges[i[1] - 1].append(i[0])
-
     return edges
