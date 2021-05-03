@@ -67,12 +67,12 @@ def generate_graph() -> None:
 
 def read_graph() -> None:
     representation = input("Enter a representation of the input:\n"
-                               "1 - Adjacency matrix\n"
-                               "2 - Adjacency list\n"
-                               "3 - Incidence matrix\n"
-                               "Press any other key to return to the main menu\n"
-                               )
-    if representation in ["1", "2", "3"]:
+                           "1 - Adjacency matrix\n"
+                           "2 - Adjacency list\n"
+                           "3 - Incidence matrix\n"
+                           "4 - Graphical sequence\n"
+                           "Press any other key to return to the main menu\n")
+    if representation in ["1", "2", "3", "4"]:
         filename = input("Enter the name of the input file (stored in folder data):\n")
         try:
             graph.read_data(GraphRepresentation(int(representation)), filename)
@@ -106,14 +106,14 @@ def main() -> None:
                     save_graph()
                 if job == "2":
                     draw_graph()
-                if job == 3:
+                if job == "3":
                     number_of_randomizations = int(
                         input("Choose number of randomizations, zero for random in range 1-100:\n"))
 
                     if not randomize_graph(number_of_randomizations):
                         print("An error occurred while randomizing graph edges")
 
-                if job == 4:
+                if job == "4":
                     sys.exit(1)
             else:
                 main()
