@@ -80,6 +80,7 @@ class DictGraph:
         for el in edges:
             print("{}-".format(el[0]), end='')
         print(edges[-1][1], end='')
+        print()
 
 
 def random_even_graphical_sequence(n):
@@ -99,23 +100,9 @@ def random_euler_graph(n):
     res = GraphConverter.convert_graph(graphical_sequence, GraphRepresentation.GRAPHICAL_SEQUENCE,
                                        GraphRepresentation.ADJACENCY_LIST)
     euler_graph.set_graph((res, GraphRepresentation.ADJACENCY_LIST))
-    print("Random graphical sequence:")
+    print("Random graphical sequence: ", end='')
     print(*graphical_sequence)
     euler_graph.randomize_graph_edges(17)
     adj_list = convert_graph(euler_graph.adjacency_matrix,GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
-    print("graph in a form of adjacency_list")
-    print(adj_list)
     return adj_list
 
-
-
-
-
-if __name__ == "__main__":
-    # adj_matrix = [[0, 1, 1, 0, 1], [1, 0, 1, 0, 0], [1, 1, 0, 1, 1], [0, 0, 1, 0, 1], [1, 0, 1, 1, 0]]
-    # adj_list = convert_graph(adj_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
-
-    adj_list = random_euler_graph(8)
-    my_graph = DictGraph(adj_list)
-    print("Found Euler's cycle:")
-    my_graph.print_euler_cycle(1)

@@ -2,6 +2,7 @@ import sys
 
 from Graph import Graph
 from RandomGraphGenerator import *
+from DictGraph import DictGraph, random_euler_graph
 
 
 def save_graph() -> None:
@@ -87,13 +88,16 @@ def main() -> None:
     job = input("Select an option:\n"
                     "1 - Read the graph from file \n"
                     "2 - Generate a random graph \n"
+                    "3 - Generate a random Euler's graph and find Euler's cycle\n"
                     )
 
-    if job in ["1", "2"]:
+    if job in ["1", "2", "3"]:
         if job == "1":
             read_graph()
         if job == "2":
             generate_graph()
+        if job == "3":
+            generate_euler_graph()
         while True:
             job = input("Choose what you want to do with the graph:\n"
                             "1 - Save the graph to the file\n"
@@ -132,6 +136,20 @@ def find_connected_components():
     res = graph.find_components()
     print("Connected components of this graph")
     graph.print_components(res)
+
+
+def generate_euler_graph():
+    print(100*'-')
+    adj_list = random_euler_graph(8)
+    graph.set_graph((adj_list,GraphRepresentation.ADJACENCY_LIST))
+    dict_graph = DictGraph(adj_list)
+    # print("Graph in a form of adjacency_list")
+    # for c,el in enumerate(adj_list, 1):
+    #     print("{}) ".format(c), end="")
+    #     print(*el,sep=", ")
+    print("Found Euler's cycle:")
+    dict_graph.print_euler_cycle(1)
+    print(100 * '-')
 
 
 if __name__ == "__main__":
