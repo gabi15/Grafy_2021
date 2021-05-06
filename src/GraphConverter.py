@@ -53,6 +53,8 @@ def convert_graph(graph, input_representation, output_representation) -> Union[n
         return convert_from_adjacency_list(graph, output_representation)
     elif input_representation == GraphRepresentation.INCIDENCE_MATRIX:
         return convert_from_incidence_matrix(graph, output_representation)
+    elif input_representation == GraphRepresentation.GRAPHICAL_SEQUENCE:
+        return convert_from_graphical_sequence(graph, output_representation)
 
 
 def convert_from_adjacency_matrix(graph, output_representation) -> Union[np.ndarray, list]:
@@ -83,6 +85,11 @@ def convert_from_incidence_matrix(graph, output_representation) -> Union[np.ndar
         return convert_inc_mat_to_adj_list(graph)
     elif output_representation == GraphRepresentation.INCIDENCE_MATRIX:
         return graph
+
+
+def convert_from_graphical_sequence(graphical_sequence, output_representation):
+    if output_representation == GraphRepresentation.ADJACENCY_LIST:
+        return convert_edge_list_to_adj_list(convert_graph_seq_to_edge_list(graphical_sequence), len(graphical_sequence))
 
 
 def convert_adj_list_to_adj_mat(adjacency_list) -> np.ndarray:
@@ -164,3 +171,33 @@ def convert_inc_mat_to_adj_list(graph) -> list:
     graph = convert_inc_mat_to_adj_mat(graph)
 
     return convert_adj_mat_to_adj_list(graph)
+
+
+def convert_graph_seq_to_edge_list(graphical_sequence):
+    graphical_sequence = sorted(graphical_sequence, reverse=True)
+    nodes = [[node_index, node_grade, 0] for node_index, node_grade in enumerate(graphical_sequence)]
+    adjacency_set = set()
+
+    for i in range(int(sum(graphical_sequence) / 2)):
+        nodes = [node for node in nodes if node[1] > node[2]]
+
+        for nodes_left in sorted(nodes[1:], key=lambda x: (x[1] - x[2], x[1]), reverse=True):
+            edge = {nodes[0][0]+1, nodes_left[0]+1}
+
+            if edge not in adjacency_set:
+                adjacency_set.add(frozenset(edge))
+                nodes[0][2] += 1
+                nodes_left[2] += 1
+                break
+
+    adjacency_list = [list(row) for row in adjacency_set]
+    adjacency_list.sort(key=lambda x: (x[0], x[1]))
+    return adjacency_list
+
+
+def convert_edge_list_to_adj_list(edge_list,n):
+    edges = [[] for _ in range(n)]
+    for i in edge_list:
+        edges[i[0] - 1].append(i[1])
+        edges[i[1] - 1].append(i[0])
+    return edges
