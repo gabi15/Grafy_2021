@@ -1,7 +1,7 @@
 from Graph import *
 from GraphRepresentation import *
 from GraphConverter import convert_graph
-from random import randrange, randint
+from random import randrange
 
 
 class DictGraph:
@@ -11,13 +11,24 @@ class DictGraph:
             self.adjacency_dict[c] = value
         self.vertices = len(adj_list)
 
-    # function to add an edge to graph
-    def add_edge(self, u, v):
+    def add_edge(self, u, v) -> None:
+        """
+        Add edge to the graph
+        :param u: first vertex number
+        :param v: second vertex number
+        :return:
+        """
         self.adjacency_dict[u].append(v)
         self.adjacency_dict[v].append(u)
 
     # This function removes edge u-v from graph
-    def remove_edge(self, u, v):
+    def remove_edge(self, u, v) -> None:
+        """
+        Remove edge from the graph
+        :param u: first vertex number
+        :param v: second vertex number
+        :return:
+        """
         for index, key in enumerate(self.adjacency_dict[u]):
             if key == v:
                 self.adjacency_dict[u].pop(index)
@@ -25,8 +36,13 @@ class DictGraph:
             if key == u:
                 self.adjacency_dict[v].pop(index)
 
-    # A DFS based function to count reachable vertices from v
-    def DFS_count(self, v, visited):
+    def DFS_count(self, v, visited) -> int:
+        """
+        A DFS based function to count reachable vertices from v
+        :param v: vertex from which we try to reach others
+        :param visited: list passed between calls of function, on the first call filled with False
+        :return:
+        """
         count = 1
         visited[v] = True
         for i in self.adjacency_dict[v]:
@@ -34,9 +50,13 @@ class DictGraph:
                 count = count + self.DFS_count(i, visited)
         return count
 
-    # The function to check if edge u-v can be considered as next edge in
-    # Euler Tour
-    def is_next_edge_valid(self, u, v):
+    def is_next_edge_valid(self, u, v) -> bool:
+        """
+        The function to check if edge u-v can be considered as next edge in Euler Cycle
+        :param u: first vertex number
+        :param v: second vertex number
+        :return:
+        """
         # The edge u-v is valid in one of the following two cases:
 
         #  1) If v is the only adjacent vertex of u
@@ -64,7 +84,13 @@ class DictGraph:
             return False if count1 > count2 else True
 
     # Print Euler tour starting from vertex u
-    def find_euler_cycle(self, u, edges):
+    def find_euler_cycle(self, u, edges) -> list:
+        """
+
+        :param u: starting vertex number
+        :param edges: list passed between calls of function, on the first call is empty
+        :return: list of edges
+        """
         # Recur for all the vertices adjacent to this vertex
         for v in self.adjacency_dict[u]:
             # If edge u-v is not removed and it's a a valid next edge
@@ -75,6 +101,11 @@ class DictGraph:
         return edges
 
     def print_euler_cycle(self, u):
+        """
+        prints euler cycle
+        :param u: starting vertex
+        :return:
+        """
         edges = []
         edges = self.find_euler_cycle(u, edges)
         for el in edges:
@@ -83,7 +114,12 @@ class DictGraph:
         print()
 
 
-def random_even_graphical_sequence(n):
+def random_even_graphical_sequence(n) -> list:
+    """
+    returns random graphical sequence that is graphical and has even degrees
+    :param n: number of vertices
+    :return: graphical sequence as a list
+    """
     graphical_sequence = []
     for i in range(n):
         rand_even_num = randrange(2, n, 2)
@@ -93,7 +129,12 @@ def random_even_graphical_sequence(n):
     return graphical_sequence
 
 
-def random_euler_graph(n):
+def random_euler_graph(n) -> list:
+    """
+    generates random Euler graph
+    :param n: number of vertices
+    :return: adjacency list of a graph
+    """
     randomizable_flag = False
     euler_graph = Graph()
     graphical_sequence = []
