@@ -104,7 +104,7 @@ def random_euler_graph(n):
         euler_graph.set_graph((result, GraphRepresentation.ADJACENCY_LIST))
         randomizable_flag = euler_graph.randomize_graph_edges(17)
     print("Random graphical sequence: ", end='')
-    print(*graphical_sequence)
+    print(*sorted(graphical_sequence))
     adj_list = convert_graph(euler_graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                              GraphRepresentation.ADJACENCY_LIST)
     return adj_list

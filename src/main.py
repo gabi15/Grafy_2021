@@ -141,7 +141,7 @@ def find_connected_components():
 def generate_euler_graph():
     number_of_vertices = 0
     try:
-        number_of_vertices = int(input("Choose number of vertices in range 4-100:\n"))
+        number_of_vertices = int(input("Choose number of vertices in range 4-50:\n"))
         if number_of_vertices <= 3 or number_of_vertices > 50:
             raise ValueError("Number must be between 4-100")
     except ValueError as e:
