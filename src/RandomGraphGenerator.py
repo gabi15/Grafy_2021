@@ -24,6 +24,20 @@ class BadProbability(Exception):
         return "The value of probability is less than 0 or more than 1"
 
 
+class BadDegree(Exception):
+    """Raised when degree is less than 1 or bigger than the number of vertices """
+
+    def __str__(self):
+        return "The degree is less than 1 or more than the number of vertices"
+
+
+class BadNKValues(Exception):
+    """Raised when there is no graph with given degree and number of vertices """
+
+    def __str__(self):
+        return "There is no graph with given degree and number of vertices (vertices * degree is uneven)"
+
+
 def random_graph_edges(vertices: int, edges: int) -> (np.ndarray, GraphRepresentation):
     """Generate random incidence matrix for given number of vertices and edges"""
     if vertices < 2:
@@ -61,4 +75,31 @@ def random_graph_probability(vertices: int, probability: float) -> (np.ndarray, 
             r = random.random()
             if r < probability:
                 matrix[i][j] = matrix[j][i] = 1
+    return matrix, GraphRepresentation.ADJACENCY_MATRIX
+
+
+def random_graph_regular(vertices: int, degree: int) -> (np.ndarray, GraphRepresentation):
+    """Generate random adjacency matrix for given degree and number of vertices"""
+    if vertices < 2:
+        raise BadNumberOfVertices
+    if degree < 1 or degree >= vertices:
+        raise BadDegree
+    if (vertices * degree) % 2 != 0:
+        raise BadNKValues
+
+    matrix = np.zeros((vertices, vertices), dtype=int)
+
+    U = [i for i in range(vertices * degree)]
+    pairs = []
+    while len(U) > 1:
+        u, v = random.choices(U, k=2)
+        a = u % vertices
+        b = v % vertices
+        if a != b and (a, b) not in pairs and (b, a) not in pairs:
+            pairs.append((a, b))
+            U.remove(u)
+            U.remove(v)
+    for u, v in pairs:
+        matrix[u][v] = matrix[v][u] = 1
+
     return matrix, GraphRepresentation.ADJACENCY_MATRIX

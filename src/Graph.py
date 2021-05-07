@@ -255,7 +255,7 @@ class Graph:
         cc_lengths = []
         searchval = 1
         while True:
-            connected_comp = [x+1 for x in np.where(comp == searchval)[0]]
+            connected_comp = [x + 1 for x in np.where(comp == searchval)[0]]
             if len(connected_comp) == 0:
                 break
             cc_lengths.append(len(connected_comp))
