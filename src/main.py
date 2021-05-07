@@ -2,6 +2,7 @@ import sys
 
 from Graph import Graph
 from RandomGraphGenerator import *
+from DictGraph import DictGraph, random_euler_graph
 from GraphChecking import hamiltonian
 
 
@@ -45,9 +46,10 @@ def generate_graph() -> None:
                        "1 - G(n,l)\n"
                        "2 - G(n,p)\n"
                        "3 - K-regular\n"
+                       "4 - Euler's graph and find Euler's cycle\n"
                        "Press any other key to return to the main menu\n"
                        )
-    if graph_type in ["1", "2", "3"]:
+    if graph_type in ["1", "2", "3", "4"]:
         n = input("Enter the number of graph vertices:\n")
         if graph_type == "1":
             l = input("Enter the number of graph edges:\n")
@@ -70,6 +72,12 @@ def generate_graph() -> None:
                 print(graph.adjacency_matrix)
             except Exception as e:
                 print("Error: " + str(e) + "\nPlease try again\n")
+                generate_graph()
+        elif graph_type == "4":
+            try:
+                generate_euler_graph(int(n))
+            except ValueError as e:
+                print("Error: "+str(e)+"\nPlease try again\n")
                 generate_graph()
     else:
         main()
@@ -95,9 +103,9 @@ def read_graph() -> None:
 
 def main() -> None:
     job = input("Select an option:\n"
-                "1 - Read the graph from file \n"
-                "2 - Generate a random graph \n"
-                )
+                    "1 - Read the graph from file \n"
+                    "2 - Generate a random graph \n"
+                    )
 
     if job in ["1", "2"]:
         if job == "1":
@@ -148,6 +156,37 @@ def find_connected_components():
     res = graph.find_components()
     print("Connected components of this graph")
     graph.print_components(res)
+#
+#
+# def generate_euler_graph():
+#     number_of_vertices = 0
+#     try:
+#         number_of_vertices = int(input("Choose number of vertices in range 4-50:\n"))
+#         if number_of_vertices <= 3 or number_of_vertices > 50:
+#             raise ValueError("Number must be between 4-50")
+#     except ValueError as e:
+#         print(repr(e))
+#         generate_euler_graph()
+#
+#     print(100*'-')
+#     adj_list = random_euler_graph(number_of_vertices)
+#     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
+#     dict_graph = DictGraph(adj_list)
+#     print("Found Euler's cycle:")
+#     dict_graph.print_euler_cycle(1)
+#     print(100 * '-')
+
+def generate_euler_graph(number_of_vertices):
+    if number_of_vertices <= 3 or number_of_vertices > 50:
+        raise ValueError("Number must be between 4-50")
+
+    print(100*'-')
+    adj_list = random_euler_graph(number_of_vertices)
+    graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
+    dict_graph = DictGraph(adj_list)
+    print("Found Euler's cycle:")
+    dict_graph.print_euler_cycle(1)
+    print(100 * '-')
 
 
 def check_hamiltonian():
