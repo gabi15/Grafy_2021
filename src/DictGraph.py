@@ -86,7 +86,6 @@ class DictGraph:
     # Print Euler tour starting from vertex u
     def find_euler_cycle(self, u, edges) -> list:
         """
-
         :param u: starting vertex number
         :param edges: list passed between calls of function, on the first call is empty
         :return: list of edges
