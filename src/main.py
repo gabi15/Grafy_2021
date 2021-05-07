@@ -203,7 +203,7 @@ def run_cmd_app(args):
         try:
             n = int(args.generate_np[0])
             p = float(args.generate_np[1])
-            graph.set_graph(random_graph_edges(n, p))
+            graph.set_graph(random_graph_probability(n, p))
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
