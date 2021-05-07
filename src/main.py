@@ -84,7 +84,7 @@ def generate_graph() -> None:
             try:
                 generate_euler_graph(int(n))
             except ValueError as e:
-                print("Error: "+str(e)+"\nPlease try again\n")
+                print("Error: " + str(e) + "\nPlease try again\n")
                 generate_graph()
     else:
         main()
@@ -115,23 +115,40 @@ def perform_read(representation: int, filename: str) -> bool:
 
 
 parser = argparse.ArgumentParser(description='Command line interface for graph app.')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--read',
+                   action='store',
+                   nargs=2,
+                   metavar=('<filename>', '<representation>'),
+                   help='Read input from a file with given name and representation.'
+                        'File has to be stored in folder data. Available input representations:\n'
+                        '1 - adjacency matrix,\n '
+                        '2 - adjacency list, \n'
+                        '3 - incidence matrix \n,'
+                        '4 - graphical sequence')
 
-parser.add_argument('--read',
-                    action='store',
-                    nargs=2,
-                    metavar=('<filename>', '<representation>'),
-                    help='Read input from a file with given name and representation.'
-                         'File has to be stored in folder data. Available input representations:\n'
-                         '1 - adjacency matrix,\n '
-                         '2 - adjacency list, \n'
-                         '3 - incidence matrix \n,'
-                         '4 - graphical sequence')
-parser.add_argument('--generate',
-                    nargs=3,
-                    metavar=('type', '<nvertices>', '<nedges/probability/degree>'),
-                    action='store',
-                    help='Generate a graph, Available types: (\'nl\', \'np\', \'k\'. Third argument depends on a graph '
-                         'type. Option ignored when --read is specified.')
+group.add_argument('--generate-nl',
+                   nargs=2,
+                   metavar=('<nvertices>', '<nedges>'),
+                   type=int,
+                   action='store',
+                   help='Generate an nl graph.')
+group.add_argument('--generate-np',
+                   nargs=2,
+                   metavar=('<nvertices>', '<probability>'),
+                   action='store',
+                   help='Generate an np graph.')
+group.add_argument('--generate-k',
+                   nargs=2,
+                   metavar=('<nvertices>', '<degree>'),
+                   type=int,
+                   action='store',
+                   help='Generate a k regular graph.')
+group.add_argument('--generate-euler',
+                   metavar=('<nvertices>'),
+                   type=int,
+                   action='store',
+                   help='Generate Euler\'s graph. Number of vertices must be between 4-50')
 parser.add_argument('--draw',
                     action='store',
                     metavar='<filename>',
@@ -167,39 +184,44 @@ parser.add_argument('--save',
 
 
 def run_cmd_app(args):
-    print(args.read)
+    print(args)
     if args.read is not None:
         if args.read[1] in ['1', '2', '3', '4']:
             representation = int(args.read[1])
             filename = args.read[0]
             if not perform_read(representation, filename):
                 sys.exit(1)
-    elif args.generate is not None:
-        if args.generate[0] == 'nl':
-            try:
-                n = int(args.generate[1])
-                l = int(args.generate[2])
-                graph.set_graph(random_graph_edges(n, l))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                sys.exit(1)
-        elif args.generate[0] == 'np':
-            try:
-                n = int(args.generate[1])
-                p = float(args.generate[2])
-                graph.set_graph(random_graph_edges(n, p))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                sys.exit(1)
-        elif args.generate[0] == 'k':
-            try:
-                n = int(args.generate[1])
-                k = int(args.generate[2])
-                graph.set_graph(random_graph_regular(n, k))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                sys.exit(1)
-
+    elif args.generate_nl is not None:
+        try:
+            n = int(args.generate_nl[0])
+            l = int(args.generate_nl[1])
+            graph.set_graph(random_graph_edges(n, l))
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
+    elif args.generate_np is not None:
+        try:
+            n = int(args.generate_np[0])
+            p = float(args.generate_np[1])
+            graph.set_graph(random_graph_edges(n, p))
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
+    elif args.generate_k is not None:
+        try:
+            n = int(args.generate_k[0])
+            k = int(args.generate_k[1])
+            graph.set_graph(random_graph_regular(n, k))
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
+    elif args.generate_euler is not None:
+        try:
+            n = int(args.generate_euler)
+            generate_euler_graph(n)
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
     else:
         print("Data input option not specified. Please specify --read or --generate option\n")
         sys.exit(1)
@@ -296,31 +318,13 @@ def find_connected_components():
     res = graph.find_components()
     print("Connected components of this graph")
     graph.print_components(res)
-#
-#
-# def generate_euler_graph():
-#     number_of_vertices = 0
-#     try:
-#         number_of_vertices = int(input("Choose number of vertices in range 4-50:\n"))
-#         if number_of_vertices <= 3 or number_of_vertices > 50:
-#             raise ValueError("Number must be between 4-50")
-#     except ValueError as e:
-#         print(repr(e))
-#         generate_euler_graph()
-#
-#     print(100*'-')
-#     adj_list = random_euler_graph(number_of_vertices)
-#     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
-#     dict_graph = DictGraph(adj_list)
-#     print("Found Euler's cycle:")
-#     dict_graph.print_euler_cycle(1)
-#     print(100 * '-')
+
 
 def generate_euler_graph(number_of_vertices):
     if number_of_vertices <= 3 or number_of_vertices > 50:
         raise ValueError("Number must be between 4-50")
 
-    print(100*'-')
+    print(100 * '-')
     adj_list = random_euler_graph(number_of_vertices)
     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
     dict_graph = DictGraph(adj_list)
