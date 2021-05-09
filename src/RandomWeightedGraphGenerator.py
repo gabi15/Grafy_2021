@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import RandomGraphGenerator as rgg
-import GraphConverter as gc
 import GraphRepresentation as gr
 
 
@@ -22,14 +21,11 @@ def draw_random_weights(adj_mat):
 
 def random_weighted_graph_edges(vertices: int, edges: int) -> (np.ndarray, gr.GraphRepresentation):
     """Generate random weighted adjacency matrix for given number of vertices and edges"""
-    inc_mat, rep = rgg.random_graph_edges(vertices, edges)
-    adj_mat = gc.convert_graph(inc_mat, rep, gr.GraphRepresentation.ADJACENCY_MATRIX)
-    draw_random_weights(adj_mat)
-    return adj_mat
+    adj_mat, _ = rgg.random_graph_edges(vertices, edges)
+    return draw_random_weights(adj_mat), gr.GraphRepresentation.ADJACENCY_MATRIX
 
 
 def random_weighted_graph_probability(vertices: int, probability: float) -> (np.ndarray, gr.GraphRepresentation):
     """Generate random weighted adjacency matrix for given number of vertices and probability"""
     adj_mat, _ = rgg.random_graph_probability(vertices, probability)
-    draw_random_weights(adj_mat)
-    return adj_mat
+    return draw_random_weights(adj_mat), gr.GraphRepresentation.ADJACENCY_MATRIX
