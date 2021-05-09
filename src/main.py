@@ -307,7 +307,7 @@ def randomize_graph():
 def perform_randomize_graph(number_of_randomizations) -> bool:
     try:
         if not graph.randomize_graph_edges(int(number_of_randomizations)):
-            print("An error occurred while randomizing graph edges")
+            print("An error occurred while randomizing graph edges - randomization is not possible")
         return True
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
