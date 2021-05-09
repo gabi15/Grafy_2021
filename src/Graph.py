@@ -46,57 +46,6 @@ class Graph:
         else:
             return False
 
-    def visualise_graph_on_circle(self, save_to_file, file_name) -> None:
-        """Visualize graph on a circle. Return visualization or save to file.
-        :param save_to_file: if True, the graph will be saved to file_name file
-        :param file_name file name for the graph"""
-        nodes_number = len(self.adjacency_matrix)
-        phi = 2 * math.pi / nodes_number
-        # estimate graph radius
-        graph_radius = nodes_number * 1.5
-
-        nodes = []
-
-        for node in range(nodes_number):
-            nodes.insert(node, (math.cos(phi * node) * graph_radius, math.sin(phi * node) * graph_radius))
-
-        plt.close()
-        figure, axes = plt.subplots()
-        axes.set_aspect(1)
-        figure.set_size_inches(8, 8)
-
-        for i in range(len(self.adjacency_matrix)):
-            for j in range(len(self.adjacency_matrix[0])):
-                if self.adjacency_matrix[i][j] == 1:
-                    (x, y) = nodes[i]
-                    (x2, y2) = nodes[j]
-                    plt.plot([x / 15 + 0.5, x2 / 15 + 0.5], [y / 15 + 0.5, y2 / 15 + 0.5], 'r-', linewidth=2, zorder=1)
-
-        i = 0
-        for node in nodes:
-            (x, y) = node
-            i += 1
-            circle_border = plt.Circle((x / 15 + 0.5, y / 15 + 0.5), radius=0.07 * nodes_number / 10, color='black',
-                                       zorder=2)
-            circle = plt.Circle((x / 15 + 0.5, y / 15 + 0.5), radius=0.06 * nodes_number / 10, color='green', zorder=3)
-            axes.add_patch(circle_border)
-            axes.add_patch(circle)
-            if nodes_number <= 20:
-                font_size = 16
-            else:
-                font_size = 20
-            axes.annotate(i, xy=(x / 15 + 0.5, y / 15 + 0.5), fontsize=font_size, color='white',
-                          verticalalignment='center', horizontalalignment='center')
-
-        plt.axis("off")
-        axes.set_aspect('equal')
-
-        if save_to_file:
-            plt.rcParams['savefig.format'] = 'png'
-            plt.savefig("data/" + file_name)
-        else:
-            plt.show()
-
     def visualize_graph_with_weights(self, save_to_file, file_name) -> None:
         """Visualize weighted graph"""
         G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
@@ -189,9 +138,9 @@ class Graph:
     def find_center(self) -> int:
         """Find the node that has the smallest sum of distances to other nodes"""
         distances_matrix = self.find_distances_matrix()
-        min_sum = max(sum(distances_matrix))
+        min_sum = sum(distances_matrix[0])
         current_index = 0
-        node_index = -1
+        node_index = 0
 
         for i in distances_matrix:
             if sum(i) < min_sum:
@@ -204,9 +153,9 @@ class Graph:
     def find_minimax_center(self) -> int:
         """Find the node that has the smallest distance to the most distant node"""
         distances_matrix = self.find_distances_matrix()
-        min_max = max(sum(distances_matrix))
+        min_max = max(distances_matrix[0])
         current_index = 0
-        node_index = -1
+        node_index = 0
 
         for i in distances_matrix:
             if max(i) < min_max:
@@ -234,7 +183,7 @@ class Graph:
         for i in range(self.vertices):
 
             # If some node is adjacent to the current node and it has not already been visited
-            if self.adjacency_matrix[start][i] == 1 and not visited[i]:
+            if self.adjacency_matrix[start][i] > 0 and not visited[i]:
                 self.DFS(i, visited, visited_collected)
 
     def find_components(self) -> np.ndarray:
@@ -261,6 +210,7 @@ class Graph:
         graph, representation = data
         self.adjacency_matrix = GraphConverter.convert_graph(graph, representation,
                                                              GraphRepresentation.ADJACENCY_MATRIX)
+        self.vertices = self.adjacency_matrix.shape[0]
 
     def __str__(self) -> str:
         """Returns the adjacency matrix"""
