@@ -102,8 +102,8 @@ class GraphReader:
         except Exception as e:
             raise IncorrectInputException("Incorrect input - an error occurred while reading the file:\n" + str(e))
         if len(graphical_sequence) == 0:
-            raise IncorrectInputException("Incorrect input - graphical sequence is empty")
+            raise IncorrectInputException("Graphical sequence is empty")
         elif not self.is_graphical_sequence(graphical_sequence[0]):
-            raise IncorrectInputException("Incorrect input - sequence is not graphical")
+            raise IncorrectInputException("Sequence is not graphical")
         else:
             return GraphConverter.convert_graph(GraphConverter.convert_graph(graphical_sequence[0], GraphRepresentation.GRAPHICAL_SEQUENCE, GraphRepresentation.ADJACENCY_LIST), GraphRepresentation.ADJACENCY_LIST, GraphRepresentation.ADJACENCY_MATRIX)
