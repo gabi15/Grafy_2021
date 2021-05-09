@@ -15,6 +15,7 @@ class Graph:
     def __init__(self):
         self.reader = GraphReader()
         self.adjacency_matrix = None
+        self.vertices = -1
 
     def read_data(self, representation, filename) -> bool:
         """Read a graph from a file using given representation"""
@@ -96,14 +97,19 @@ class Graph:
         else:
             plt.show()
 
-    def visualize_graph_with_weights(self) -> None:
+    def visualize_graph_with_weights(self, save_to_file, file_name) -> None:
         """Visualize weighted graph"""
         G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
         layout = nx.spring_layout(G)
         labels = nx.get_edge_attributes(G, "weight")
         nx.draw(G, layout, with_labels=True)
         nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
-        plt.show()
+
+        if save_to_file:
+            plt.rcParams['savefig.format'] = 'png'
+            plt.savefig("data/" + file_name)
+        else:
+            plt.show()
 
     def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
         """Initialize distances and positions arrays to perform Dijkstra's algorithm
@@ -209,6 +215,46 @@ class Graph:
             current_index += 1
 
         return node_index
+
+    def DFS(self, start, visited, visited_collected) -> None:
+        """
+        Runs Depth First Search algorithm
+        :param start: starting node
+        :param visited: list needed to recursively call function
+        :param visited_collected: list of visited nodes
+        :return:
+        """
+        # add current node
+        visited_collected.append(start)
+
+        # Set current node as visited
+        visited[start] = True
+
+        # For every node of the graph
+        for i in range(self.vertices):
+
+            # If some node is adjacent to the current node and it has not already been visited
+            if self.adjacency_matrix[start][i] == 1 and not visited[i]:
+                self.DFS(i, visited, visited_collected)
+
+    def find_components(self) -> np.ndarray:
+        """
+        finds connected components in graph and returns a list: for example [0,0,1] means that vertices
+        0 and 1 are connected, vertex 3 is alone to work properly graph must have adjacency matrix initialized
+        :return: list of connected components
+        """
+        nr = 0
+        comp = np.zeros((self.vertices,), dtype=int)  # this will save
+        for i in range(self.vertices):
+            visited_collected = []
+            if comp[i] == 0:
+                nr += 1
+                comp[i] = nr
+                visited = [False] * self.vertices
+                self.DFS(i, visited, visited_collected)
+                for el in visited_collected:
+                    comp[el] = nr
+        return comp
 
     def set_graph(self, data) -> None:
         """Sets the adjacency matrix"""
