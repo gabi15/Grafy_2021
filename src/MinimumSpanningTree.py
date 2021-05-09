@@ -1,5 +1,4 @@
 import numpy as np
-# from Graph import Graph
 from GraphRepresentation import GraphRepresentation
 
 
@@ -31,12 +30,3 @@ def minimum_spanning_tree(matrix: np.ndarray):
 
     return mat, GraphRepresentation.ADJACENCY_MATRIX
 
-# example
-# m = np.array([[0, 2, 0, 6, 0],
-#               [2, 0, 3, 8, 5],
-#               [0, 3, 0, 0, 7],
-#               [6, 8, 0, 0, 9],
-#               [0, 5, 7, 9, 0]], dtype=int)
-# g = Graph()
-# g.set_graph(minimum_spanning_tree(m))
-# g.visualize_graph_with_weights()
