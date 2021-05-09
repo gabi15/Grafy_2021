@@ -4,6 +4,7 @@ import argparse
 from Graph import Graph
 from RandomGraphGenerator import *
 from RandomWeightedGraphGenerator import *
+from MinimumSpanningTree import *
 
 
 def save_graph() -> None:
@@ -48,29 +49,14 @@ def draw_graph() -> None:
 
 
 def generate_graph() -> None:
-    graph_type = input("Select type of the weighted graph:\n"
-                       "1 - G(n,l)\n"
-                       "2 - G(n,p)\n"
-                       "Press any other key to return to the main menu\n"
-                       )
-    if graph_type in ["1", "2"]:
-        n = input("Enter the number of graph vertices:\n")
-        if graph_type == "1":
-            l = input("Enter the number of graph edges:\n")
-            try:
-                graph.set_graph(random_weighted_graph_edges(int(n), int(l)))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                generate_graph()
-        elif graph_type == "2":
-            p = input("Enter the probability in range [0,1]:\n")
-            try:
-                graph.set_graph(random_weighted_graph_probability(int(n), float(p)))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                generate_graph()
-    else:
-        main()
+    print("Select number of vertices and probability for the G(n,p) weighted graph:")
+    n = input("Enter the number of graph vertices:\n")
+    p = input("Enter the probability in range [0,1]:\n")
+    try:
+        graph.set_graph(random_weighted_graph_probability(int(n), float(p)))
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        generate_graph()
 
 
 def read_graph() -> None:
@@ -204,19 +190,20 @@ def find_shortest_paths():
 
 
 def find_distances_matrix():
-    pass
+    print(graph.find_distances_matrix())
 
 
 def find_center():
-    pass
+    print(graph.find_center())
 
 
 def find_minimax_center():
-    pass
+    print(graph.find_minimax_center())
 
 
 def find_minimal_spanning_tree():
-    pass
+    graph.set_graph(minimum_spanning_tree(graph.adjacency_matrix))
+    graph.visualize_graph_with_weights(False, "")
 
 
 def main() -> None:
@@ -241,7 +228,7 @@ def main() -> None:
                             "3 - Find shortest paths\n"
                             "4 - Find distances matrix\n"
                             "5 - Find center\n"
-                            "6 - Find minimax center"
+                            "6 - Find minimax center\n"
                             "7 - Find minimal spanning tree\n"
                             "8 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
