@@ -19,12 +19,6 @@ def draw_random_weights(adj_mat):
     return adj_mat
 
 
-def random_weighted_graph_edges(vertices: int, edges: int) -> (np.ndarray, gr.GraphRepresentation):
-    """Generate random weighted adjacency matrix for given number of vertices and edges"""
-    adj_mat, _ = rgg.random_graph_edges(vertices, edges)
-    return draw_random_weights(adj_mat), gr.GraphRepresentation.ADJACENCY_MATRIX
-
-
 def random_weighted_graph_probability(vertices: int, probability: float) -> (np.ndarray, gr.GraphRepresentation):
     """Generate random weighted adjacency matrix for given number of vertices and probability"""
     adj_mat, _ = rgg.random_graph_probability(vertices, probability)
