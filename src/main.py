@@ -154,15 +154,23 @@ def find_shortest_paths():
 
 
 def find_distances_matrix():
-    print(graph.find_distances_matrix())
+    for i, val in enumerate(graph.find_distances_matrix()):
+        print(f'{i}:', end='')
+        for v in val:
+            print(f' {int(v)}', end='')
+        print()
 
 
 def find_center():
-    print(graph.find_center())
+    centers, centers_sum = graph.find_center()
+    print(f'Center nodes: {centers}')
+    print(f'Sum: {int(centers_sum)}')
 
 
 def find_minimax_center():
-    print(graph.find_minimax_center())
+    minimax_centers, minimax_centers_max = graph.find_minimax_center()
+    print(f'Center nodes: {minimax_centers}')
+    print(f'Minimax: {int(minimax_centers_max)}')
 
 
 def find_minimal_spanning_tree():

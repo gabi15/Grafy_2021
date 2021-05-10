@@ -135,35 +135,39 @@ class Graph:
 
         return distances_matrix
 
-    def find_center(self) -> int:
+    def find_center(self) -> (list, int):
         """Find the node that has the smallest sum of distances to other nodes"""
         distances_matrix = self.find_distances_matrix()
         min_sum = sum(distances_matrix[0])
         current_index = 0
-        node_index = 0
+        node_index = []
 
         for i in distances_matrix:
             if sum(i) < min_sum:
                 min_sum = sum(i)
-                node_index = current_index
+                node_index = [current_index]
+            elif sum(i) == min_sum:
+                node_index.append(current_index)
             current_index += 1
 
-        return node_index
+        return node_index, min_sum
 
-    def find_minimax_center(self) -> int:
+    def find_minimax_center(self) -> (list, int):
         """Find the node that has the smallest distance to the most distant node"""
         distances_matrix = self.find_distances_matrix()
         min_max = max(distances_matrix[0])
         current_index = 0
-        node_index = 0
+        node_index = []
 
         for i in distances_matrix:
             if max(i) < min_max:
                 min_max = max(i)
-                node_index = current_index
+                node_index = [current_index]
+            elif max(i) == min_max:
+                node_index.append(current_index)
             current_index += 1
 
-        return node_index
+        return node_index, min_max
 
     def DFS(self, start, visited, visited_collected) -> None:
         """
