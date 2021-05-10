@@ -5,6 +5,7 @@ from Graph import Graph
 from RandomGraphGenerator import *
 from DictGraph import DictGraph, random_euler_graph
 from GraphChecking import hamiltonian
+from GraphConverter import convert_graph
 
 
 def save_graph() -> None:
@@ -53,7 +54,7 @@ def generate_graph() -> None:
                        "1 - G(n,l)\n"
                        "2 - G(n,p)\n"
                        "3 - K-regular\n"
-                       "4 - Euler's graph and find Euler's cycle\n"
+                       "4 - Euler's graph\n"
                        "Press any other key to return to the main menu\n"
                        )
     if graph_type in ["1", "2", "3", "4"]:
@@ -275,7 +276,8 @@ def main() -> None:
                             "3 - Randomize graph edges\n"
                             "4 - Find connected components\n"
                             "5 - Check if the graph is hamiltonian\n"
-                            "6 - Exit the program\n"
+                            "6 - Find Euler's cycle\n"
+                            "7 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
                 if job in ["1", "2", "3", "4", "5", "6"]:
                     if job == "1":
@@ -289,6 +291,8 @@ def main() -> None:
                     elif job == "5":
                         check_hamiltonian()
                     elif job == "6":
+                        find_euler_cycle()
+                    elif job == "7":
                         sys.exit(1)
                 else:
                     main()
@@ -325,12 +329,29 @@ def generate_euler_graph(number_of_vertices):
         raise ValueError("Number must be between 4-50")
 
     print(100 * '-')
+    print(number_of_vertices)
     adj_list = random_euler_graph(number_of_vertices)
     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
-    dict_graph = DictGraph(adj_list)
-    print("Found Euler's cycle:")
-    dict_graph.print_euler_cycle(1)
-    print(100 * '-')
+
+
+def is_eulers_graph():
+    adj_list = convert_graph(graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    for el in adj_list:
+        if len(el) % 2 != 0:
+            return False
+    return True
+
+
+def find_euler_cycle():
+    adj_list = convert_graph(graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    if is_eulers_graph():
+        dict_graph = DictGraph(adj_list)
+        print("Found Euler's cycle:")
+        dict_graph.print_euler_cycle(1)
+        print(100 * '-')
+    else:
+        print("It is not an Euler's graph! Can't find Euler's cycle")
+
 
 
 def check_hamiltonian():
