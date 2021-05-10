@@ -61,17 +61,30 @@ def generate_graph() -> None:
 
 
 parser = argparse.ArgumentParser(description='Command line interface for graph app.')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--generate-np',
+
+parser.add_argument('--generate-np',
                    nargs=2,
                    metavar=('<nvertices>', '<probability>'),
                    action='store',
+                   required=True,
                    help='Generate an np graph.')
-group.add_argument('--print_dijkstra',
-                   nargs=1,
+parser.add_argument('--shortest-paths',
                    metavar='<starting_node>',
+                   type=int,
                    action='store',
-                   help='Perform Dijkstra algorithm.')
+                   help='Find shortest paths using Dijkstra algorithm.')
+parser.add_argument('--distances-matrix',
+                   action='store_true',
+                   help='Find distances matrix.')
+parser.add_argument('--center',
+                    action='store_true',
+                    help='Find center of the graph.')
+parser.add_argument('--center-minimax',
+                    action='store_true',
+                    help='Find minimax center of the graph.')
+parser.add_argument('--minimal-spanning-tree',
+                    action='store_true',
+                    help='Find minimal spanning tree of the graph.')
 parser.add_argument('--draw',
                     action='store',
                     metavar='<filename>',
@@ -90,7 +103,6 @@ parser.add_argument('--save',
 
 
 def run_cmd_app(args):
-    print(args)
     if args.generate_np is not None:
         try:
             n = int(args.generate_np[0])
@@ -110,13 +122,26 @@ def run_cmd_app(args):
             filename = args.save[0]
             if not perform_save(representation, filename):
                 sys.exit(1)
-    if args.print_dijkstra is not None:
-        starting_node = args.print_dijkstra
+    if args.shortest_paths is not None:
         try:
+            starting_node = args.shortest_paths
+            print("Shortest paths starting at node: " + str(args.shortest_paths) +" \n")
             graph.print_dijkstra(starting_node)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
+    if args.distances_matrix:
+        print("Distances matrix of generated graph:")
+        find_distances_matrix()
+    if args.center:
+        print("Center of generated graph:")
+        find_center()
+    if args.center_minimax:
+        print("Center minimax of generated graph:")
+        find_minimax_center()
+    if args.minimal_spanning_tree:
+        print("Minimal spanning tree of generated graph:")
+        find_minimal_spanning_tree()
 
 
 def find_shortest_paths():
