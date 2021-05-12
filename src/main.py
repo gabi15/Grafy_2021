@@ -320,8 +320,10 @@ def perform_randomize_graph(number_of_randomizations) -> bool:
 
 def find_connected_components():
     res = graph.find_components()
+    print(100 * '-')
     print("Connected components of this graph")
     graph.print_components(res)
+    print(100 * '-')
 
 
 def generate_euler_graph(number_of_vertices):
@@ -329,9 +331,9 @@ def generate_euler_graph(number_of_vertices):
         raise ValueError("Number must be between 4-50")
 
     print(100 * '-')
-    print(number_of_vertices)
     adj_list = random_euler_graph(number_of_vertices)
     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
+    print(100 * '-')
 
 
 def is_eulers_graph():
@@ -344,14 +346,14 @@ def is_eulers_graph():
 
 def find_euler_cycle():
     adj_list = convert_graph(graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    print(100 * '-')
     if is_eulers_graph():
         dict_graph = DictGraph(adj_list)
         print("Found Euler's cycle:")
         dict_graph.print_euler_cycle(1)
-        print(100 * '-')
     else:
         print("It is not an Euler's graph! Can't find Euler's cycle")
-
+    print(100 * '-')
 
 
 def check_hamiltonian():
