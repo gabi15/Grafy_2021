@@ -1,35 +1,27 @@
 import sys
-import argparse
-from copy import deepcopy
 
-from Graph import Graph
-from RandomWeightedGraphGenerator import *
-from MinimumSpanningTree import *
+from Digraph import Digraph
+from GraphRepresentation import GraphRepresentation
 
 
-def save_graph() -> None:
+def save_digraph() -> None:
     representation = input("Select an output representation:\n"
+                           "1 - Adjacency matrix\n"
                            "2 - Adjacency list\n"
                            "3 - Incidence matrix\n"
                            )
     if representation in ["1", "2", "3"]:
         filename = input("Insert an output filename:\n")
-        perform_save(int(representation), filename)
+        if digraph.save_to_file(GraphRepresentation(int(representation)), filename):
+            print("Completed. Check folder data")
+        else:
+            print("An error occurred while saving the graph")
     else:
         print("Wrong representation selected, try again")
-        save_graph()
+        save_digraph()
 
 
-def perform_save(representation, filename) -> bool:
-    if graph.save_to_file(GraphRepresentation(representation), filename):
-        print("Completed. Check folder data")
-        return True
-    else:
-        print("An error occurred while saving the graph")
-        return False
-
-
-def draw_graph() -> None:
+def draw_digraph() -> None:
     save_to_file = input("Do you want to save image to a file? Select an option:\n"
                          "0 - No\n"
                          "1 - Yes\n"
@@ -41,150 +33,71 @@ def draw_graph() -> None:
                 file_name = input("Specify file name for the graph:\n")
             except Exception as e:
                 print("Error: " + str(e) + "\nPlease try again\n")
-        graph.visualize_graph_with_weights(bool(int(save_to_file)), file_name)
+        digraph.visualise_digraph(bool(int(save_to_file)), file_name)
     else:
         print("Wrong input, try again")
-        draw_graph()
+        draw_digraph()
 
 
-def generate_graph() -> None:
-    print("Select number of vertices and probability for the G(n,p) weighted graph:")
-    n = int(input("Enter the number of graph vertices:\n"))
-    p = float(input("Enter the probability in range [0,1]:\n"))
+def generate_digraph() -> None:
+    n = input("Enter the number of graph vertices:\n")
+    p = input("Enter the number of graph edges:\n")
     try:
-        graph.set_graph(random_weighted_graph_probability(n, p))
-        while max(graph.find_components()) > 1:
-            graph.set_graph(random_weighted_graph_probability(n, p))
+        digraph.random_digraph(int(n), float(p))
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
-        generate_graph()
+        generate_digraph()
 
 
-parser = argparse.ArgumentParser(description='Command line interface for graph app.')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--generate-np',
-                   nargs=2,
-                   metavar=('<nvertices>', '<probability>'),
-                   action='store',
-                   help='Generate an np graph.')
-group.add_argument('--print_dijkstra',
-                   nargs=1,
-                   metavar='<starting_node>',
-                   action='store',
-                   help='Perform Dijkstra algorithm.')
-parser.add_argument('--draw',
-                    action='store',
-                    metavar='<filename>',
-                    nargs='?',
-                    const=True,
-                    help='Draw the graph. Specify filename if you want to save the image to the file')
-parser.add_argument('--save',
-                    action='store',
-                    nargs=2,
-                    metavar=('<filename>', '<representation>'),
-                    help='Save graph to the file with given name and representation.'
-                         'Available output representations:\n'
-                         '1 - adjacency matrix,\n '
-                         '2 - adjacency list, \n'
-                         '3 - incidence matrix \n')
-
-
-def run_cmd_app(args):
-    print(args)
-    if args.generate_np is not None:
+def read_digraph() -> None:
+    representation = input("Enter a representation of the input:\n"
+                           "1 - Adjacency matrix\n"
+                           "2 - Adjacency list\n"
+                           "3 - Incidence matrix\n"
+                           "Press any other key to return to the main menu\n"
+                           )
+    if representation in ["1", "2", "3"]:
+        filename = input("Enter the name of the input file (stored in folder data):\n")
         try:
-            n = int(args.generate_np[0])
-            p = float(args.generate_np[1])
-            graph.set_graph(random_weighted_graph_probability(n, p))
-            while max(graph.find_components()) > 1:
-                graph.set_graph(random_weighted_graph_probability(n, p))
+            digraph.read_data(GraphRepresentation(int(representation)), filename)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
-            sys.exit(1)
+            read_digraph()
     else:
-        print("Data input option not specified. Please specify --read or --generate option\n")
-        sys.exit(1)
-    if args.save is not None:
-        if args.save[1] in ["1", "2", "3"]:
-            representation = int(args.save[1])
-            filename = args.save[0]
-            if not perform_save(representation, filename):
-                sys.exit(1)
-    if args.print_dijkstra is not None:
-        starting_node = args.print_dijkstra
-        try:
-            graph.print_dijkstra(starting_node)
-        except Exception as e:
-            print("Error: " + str(e) + "\nPlease try again\n")
-            sys.exit(1)
-
-
-def find_shortest_paths():
-    try:
-        starting_node = input("Enter node to start with:\n")
-        graph.print_dijkstra(int(starting_node))
-    except Exception as e:
-        print("Wrong input, try again\n")
-        find_shortest_paths()
-
-
-def find_distances_matrix():
-    print(graph.find_distances_matrix())
-
-
-def find_center():
-    print(graph.find_center())
-
-
-def find_minimax_center():
-    print(graph.find_minimax_center())
-
-
-def find_minimal_spanning_tree():
-    graph_copy = deepcopy(graph)
-    graph_copy.set_graph(minimum_spanning_tree(graph_copy.adjacency_matrix))
-    graph_copy.visualize_graph_with_weights(False, "")
-    del graph_copy
+        main()
 
 
 def main() -> None:
-    if len(sys.argv) > 1:
-        args = parser.parse_args()
-        run_cmd_app(args)
-    else:
-        generate_graph()
+    job = input("Select an option:\n"
+                "1 - Read the digraph from file \n"
+                "2 - Generate a random G(n,p) digraph \n"
+                )
+
+    if job in ["1", "2"]:
+        if job == "1":
+            read_digraph()
+        if job == "2":
+            generate_digraph()
         while True:
             job = input("Choose what you want to do with the graph:\n"
                         "1 - Save the graph to the file\n"
                         "2 - Draw the graph\n"
-                        "3 - Find shortest paths\n"
-                        "4 - Find distances matrix\n"
-                        "5 - Find center\n"
-                        "6 - Find minimax center\n"
-                        "7 - Find minimal spanning tree\n"
-                        "8 - Exit the program\n"
+                        "3 - Exit the program\n"
                         "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+            if job in ["1", "2", "3"]:
                 if job == "1":
-                    save_graph()
-                elif job == "2":
-                    draw_graph()
-                elif job == "3":
-                    find_shortest_paths()
-                elif job == "4":
-                    find_distances_matrix()
-                elif job == "5":
-                    find_center()
-                elif job == "6":
-                    find_minimax_center()
-                elif job == "7":
-                    find_minimal_spanning_tree()
-                elif job == "8":
+                    save_digraph()
+                if job == "2":
+                    draw_digraph()
+                if job == "3":
                     sys.exit(1)
             else:
                 main()
+    else:
+        print("Wrong option selected, try again")
+        main()
 
 
 if __name__ == "__main__":
-    graph = Graph()
+    digraph = Digraph()
     main()
