@@ -164,10 +164,13 @@ parser.add_argument('--randomize',
                     const=0,
                     help='Randomize the graph. Chose number of randomizations. Leave the argument '
                          'empty for a random number of randomizations from range [1-100]')
-parser.add_argument('--find',
+parser.add_argument('--find-connected-components',
                     action='store_true',
                     help='Find connected components')
-parser.add_argument('--check',
+parser.add_argument('--find-eulers-cycle',
+                    action='store_true',
+                    help='Find Euler\'s cycle')
+parser.add_argument('--check-hamiltonian',
                     action='store',
                     metavar='<starting node>',
                     type=int,
@@ -185,7 +188,6 @@ parser.add_argument('--save',
 
 
 def run_cmd_app(args):
-    print(args)
     if args.read is not None:
         if args.read[1] in ['1', '2', '3', '4']:
             representation = int(args.read[1])
@@ -226,15 +228,17 @@ def run_cmd_app(args):
     else:
         print("Data input option not specified. Please specify --read or --generate option\n")
         sys.exit(1)
-    if args.find:
-        find_connected_components()
-    if args.check is not None:
-        starting_node = args.check
-        if not perform_check_hamiltonian(starting_node):
-            sys.exit(1)
     if args.randomize is not None:
         number_of_randomizations = args.randomize
         if not perform_randomize_graph(number_of_randomizations):
+            sys.exit(1)
+    if args.find_connected_components:
+        find_connected_components()
+    if args.find_eulers_cycle:
+        find_euler_cycle()
+    if args.check_hamiltonian is not None:
+        starting_node = args.check_hamiltonian
+        if not perform_check_hamiltonian(starting_node):
             sys.exit(1)
     if args.draw is not None:
         if args.draw is not True:
