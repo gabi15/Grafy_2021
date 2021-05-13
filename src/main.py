@@ -22,7 +22,7 @@ def save_graph() -> None:
 
 def perform_save(representation, filename) -> bool:
     if graph.save_to_file(GraphRepresentation(representation), filename):
-        print("Completed. Check folder data")
+        print("Saving completed. Check folder data")
         return True
     else:
         print("An error occurred while saving the graph")
@@ -130,6 +130,16 @@ def run_cmd_app(args):
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
+    if args.draw is not None:
+        if args.draw is not True:
+            file_name = args.draw
+            try:
+                graph.visualize_graph_with_weights(True, file_name)
+            except Exception as e:
+                print("Error: " + str(e) + "\nPlease try again\n")
+                sys.exit(1)
+        else:
+            graph.visualize_graph_with_weights(False, None)
     if args.distances_matrix:
         print("Distances matrix of generated graph:")
         find_distances_matrix()
