@@ -2,10 +2,24 @@
 
 ##How to start:
 
-To start the app on Linux machine just run this two commands:
+To install all depedencies used by the project run:
 
-1. ```pip3 install -r requirements.txt```
-2. ```python3 src/main.py```
+```pip3 install -r requirements.txt```
+
+To start the app in interactive mode run the main file without any additional parameters. Use the following command:
+
+ ```python3 src/main.py```
+ 
+ If you want to use the app in command line mode, specify tasks you want to execute. You can find all the available options by running the app with -h or --help parameter e.g.:
+ 
+  ```python3 src/main.py -h```
+  
+  Few hints
+  
+ 1. You have to specify type of input. You have to choose one of available options (read or generate graph).
+ 2. You can (or rather you must) specify multiple arguments in one line e.g.:
+ ```python3 src/main.py --read file.txt 1 --draw --randomize 2 --save out.txt 2```
+ 3. Order of the arguments does not matter. All specified arguments will run only once, always in the same order.
 
 Input files have to be stored in the data folder.
  
