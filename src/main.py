@@ -283,7 +283,7 @@ def main() -> None:
                             "6 - Find Euler's cycle\n"
                             "7 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
-                if job in ["1", "2", "3", "4", "5", "6"]:
+                if job in ["1", "2", "3", "4", "5", "6", "7"]:
                     if job == "1":
                         save_graph()
                     elif job == "2":
