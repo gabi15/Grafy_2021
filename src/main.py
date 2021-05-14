@@ -5,6 +5,7 @@ from Graph import Graph
 from RandomGraphGenerator import *
 from DictGraph import DictGraph, random_euler_graph
 from GraphChecking import hamiltonian
+from GraphConverter import convert_graph
 
 
 def save_graph() -> None:
@@ -53,7 +54,7 @@ def generate_graph() -> None:
                        "1 - G(n,l)\n"
                        "2 - G(n,p)\n"
                        "3 - K-regular\n"
-                       "4 - Euler's graph and find Euler's cycle\n"
+                       "4 - Euler's graph\n"
                        "Press any other key to return to the main menu\n"
                        )
     if graph_type in ["1", "2", "3", "4"]:
@@ -163,10 +164,13 @@ parser.add_argument('--randomize',
                     const=0,
                     help='Randomize the graph. Chose number of randomizations. Leave the argument '
                          'empty for a random number of randomizations from range [1-100]')
-parser.add_argument('--find',
+parser.add_argument('--find-connected-components',
                     action='store_true',
                     help='Find connected components')
-parser.add_argument('--check',
+parser.add_argument('--find-eulers-cycle',
+                    action='store_true',
+                    help='Find Euler\'s cycle')
+parser.add_argument('--check-hamiltonian',
                     action='store',
                     metavar='<starting node>',
                     type=int,
@@ -184,7 +188,6 @@ parser.add_argument('--save',
 
 
 def run_cmd_app(args):
-    print(args)
     if args.read is not None:
         if args.read[1] in ['1', '2', '3', '4']:
             representation = int(args.read[1])
@@ -225,15 +228,17 @@ def run_cmd_app(args):
     else:
         print("Data input option not specified. Please specify --read or --generate option\n")
         sys.exit(1)
-    if args.find:
-        find_connected_components()
-    if args.check is not None:
-        starting_node = args.check
-        if not perform_check_hamiltonian(starting_node):
-            sys.exit(1)
     if args.randomize is not None:
         number_of_randomizations = args.randomize
         if not perform_randomize_graph(number_of_randomizations):
+            sys.exit(1)
+    if args.find_connected_components:
+        find_connected_components()
+    if args.find_eulers_cycle:
+        find_euler_cycle()
+    if args.check_hamiltonian is not None:
+        starting_node = args.check_hamiltonian
+        if not perform_check_hamiltonian(starting_node):
             sys.exit(1)
     if args.draw is not None:
         if args.draw is not True:
@@ -275,9 +280,10 @@ def main() -> None:
                             "3 - Randomize graph edges\n"
                             "4 - Find connected components\n"
                             "5 - Check if the graph is hamiltonian\n"
-                            "6 - Exit the program\n"
+                            "6 - Find Euler's cycle\n"
+                            "7 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
-                if job in ["1", "2", "3", "4", "5", "6"]:
+                if job in ["1", "2", "3", "4", "5", "6", "7"]:
                     if job == "1":
                         save_graph()
                     elif job == "2":
@@ -289,6 +295,8 @@ def main() -> None:
                     elif job == "5":
                         check_hamiltonian()
                     elif job == "6":
+                        find_euler_cycle()
+                    elif job == "7":
                         sys.exit(1)
                 else:
                     main()
@@ -316,8 +324,10 @@ def perform_randomize_graph(number_of_randomizations) -> bool:
 
 def find_connected_components():
     res = graph.find_components()
+    print(100 * '-')
     print("Connected components of this graph")
     graph.print_components(res)
+    print(100 * '-')
 
 
 def generate_euler_graph(number_of_vertices):
@@ -327,9 +337,26 @@ def generate_euler_graph(number_of_vertices):
     print(100 * '-')
     adj_list = random_euler_graph(number_of_vertices)
     graph.set_graph((adj_list, GraphRepresentation.ADJACENCY_LIST))
-    dict_graph = DictGraph(adj_list)
-    print("Found Euler's cycle:")
-    dict_graph.print_euler_cycle(1)
+    print(100 * '-')
+
+
+def is_eulers_graph():
+    adj_list = convert_graph(graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    for el in adj_list:
+        if len(el) % 2 != 0:
+            return False
+    return True
+
+
+def find_euler_cycle():
+    adj_list = convert_graph(graph.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX, GraphRepresentation.ADJACENCY_LIST)
+    print(100 * '-')
+    if is_eulers_graph():
+        dict_graph = DictGraph(adj_list)
+        print("Found Euler's cycle:")
+        dict_graph.print_euler_cycle(1)
+    else:
+        print("It is not an Euler's graph! Can't find Euler's cycle")
     print(100 * '-')
 
 

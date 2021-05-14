@@ -156,7 +156,7 @@ class Graph:
 
         # if we still should perform randomizing or didn't fall into endless loop
         while endless_loop_flag <= free_edges_counter * 4:
-            first_start, first_end, second_start, second_end = random.sample(set(flattened_list), k=4)
+            first_start, first_end, second_start, second_end = random.sample(list(set(flattened_list)), k=4)
 
             # random nodes aren't connected in a way that would prevent randomizing (when one node is connected to two other)
             if (first_start in adjacency_list_copy[first_end - 1]) and (
