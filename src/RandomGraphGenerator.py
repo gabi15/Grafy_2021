@@ -1,6 +1,9 @@
 import numpy as np
 import random
+
 from GraphRepresentation import GraphRepresentation
+from GraphConverter import convert_adj_list_to_adj_mat, convert_edge_list_to_adj_list, convert_graph_seq_to_edge_list
+from Graph import Graph
 
 
 class BadNumberOfEdges(Exception):
@@ -87,19 +90,12 @@ def random_graph_regular(vertices: int, degree: int) -> (np.ndarray, GraphRepres
     if (vertices * degree) % 2 != 0:
         raise BadNKValues
 
-    matrix = np.zeros((vertices, vertices), dtype=int)
+    graph_seq = [degree for i in range(vertices)]
+    matrix = convert_adj_list_to_adj_mat(
+        convert_edge_list_to_adj_list(convert_graph_seq_to_edge_list(graph_seq), vertices))
 
-    U = [i for i in range(vertices * degree)]
-    pairs = []
-    while len(U) > 1:
-        u, v = random.choices(U, k=2)
-        a = u % vertices
-        b = v % vertices
-        if a != b and (a, b) not in pairs and (b, a) not in pairs:
-            pairs.append((a, b))
-            U.remove(u)
-            U.remove(v)
-    for u, v in pairs:
-        matrix[u][v] = matrix[v][u] = 1
+    g = Graph()
+    g.set_graph((matrix, GraphRepresentation.ADJACENCY_MATRIX))
+    g.randomize_graph_edges(100)
 
-    return matrix, GraphRepresentation.ADJACENCY_MATRIX
+    return g.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX

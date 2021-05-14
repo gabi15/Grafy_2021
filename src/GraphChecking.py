@@ -2,11 +2,19 @@ from typing import Union
 
 import numpy as np
 
+
 class BadStartNode(Exception):
     """Raised when the starting node is less than 0 or more than the number of vertices"""
 
-    def  __str__(self):
+    def __str__(self):
         return "The starting node is less than 0 or more than the number of vertices"
+
+
+class GraphTooBig(Exception):
+    """Raised when the graph is too big for the hamiltonian checking method"""
+
+    def __str__(self):
+        return "The graph is too big for the hamiltonian checking method"
 
 
 def is_hamiltonian(matrix: np.ndarray, path: list, visited: list, n: int) -> list:
@@ -27,10 +35,13 @@ def is_hamiltonian(matrix: np.ndarray, path: list, visited: list, n: int) -> lis
                 visited[path.pop()] = False
 
 
-def hamiltonian(matrix: np.ndarray, start: int = 1): #-> Union[tuple[bool, list[int]], tuple[bool, None]]:
+def hamiltonian(matrix: np.ndarray, start: int = 1) -> (bool, list[int]):
     """Start the process of checking if the adjacency matrix represents a hamiltonian graph
     starting from the given node """
     n = np.size(matrix, axis=1)
+
+    if n > 10:
+        raise GraphTooBig
 
     if start > n or start < 0:
         raise BadStartNode
@@ -40,4 +51,4 @@ def hamiltonian(matrix: np.ndarray, start: int = 1): #-> Union[tuple[bool, list[
     path.append(start - 1)
     visited[start - 1] = True
     is_hamiltonian(matrix, path, visited, n)
-    return (True, path) if len(path) == n else (False, None)
+    return (True, path) if len(path) == n else (False, [])
