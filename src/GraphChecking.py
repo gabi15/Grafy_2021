@@ -35,7 +35,7 @@ def is_hamiltonian(matrix: np.ndarray, path: list, visited: list, n: int) -> lis
                 visited[path.pop()] = False
 
 
-def hamiltonian(matrix: np.ndarray, start: int = 1) -> Tuple(bool, list):
+def hamiltonian(matrix: np.ndarray, start: int = 1) -> (bool, list):
     """Start the process of checking if the adjacency matrix represents a hamiltonian graph
     starting from the given node """
     n = np.size(matrix, axis=1)
