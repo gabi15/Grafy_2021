@@ -22,6 +22,13 @@ class Digraph:
                                           [0, 0, 0, 0, 0, 0, 1],
                                           [0, 1, 0, 0, 0, 0, 0],
                                           [0, 0, 0, 0, 0, 1, 0]], dtype=int)
+        self.edges_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
+                                      [1, 0, 1, 1, 1, 0, 1],
+                                      [0, 0, 0, 0, 0, 1, 0],
+                                      [0, 1, 0, 0, 0, 0, 1],
+                                      [0, 0, 0, 0, 0, 0, 1],
+                                      [0, 1, 0, 0, 0, 0, 0],
+                                      [0, 0, 0, 0, 0, 1, 0]], dtype=int)
         self.vertices = 7
 
     def kosaraju(self) -> np.ndarray:
@@ -32,7 +39,7 @@ class Digraph:
         for v in range(self.vertices):
             if distance[v] == -1:
                 t, f = self.dfs_visit(v, distance, f, t)
-        adjacency_matrix_transposed = self.adjacency_matrix.transpose()
+        vertices_arr_transposed = self.edges_matrix.transpose()
         nr = 0
         comp = np.full(self.vertices, -1, dtype=int)
         arr = np.argsort(f)[::-1]
@@ -40,7 +47,7 @@ class Digraph:
             if comp[v] == -1:
                 nr += 1
                 comp[v] = nr
-                comp = self.components_r(nr, v, adjacency_matrix_transposed, comp)
+                comp = self.components_r(nr, v, vertices_arr_transposed, comp)
         return comp
 
     def components_r(self, nr, v, matrix, comp) -> np.ndarray:
@@ -56,7 +63,7 @@ class Digraph:
         """Deep-first search algorithm for digraph"""
         t += 1
         distance[v] = t
-        neighbors = self.neighbors(v, self.adjacency_matrix)
+        neighbors = self.neighbors(v, self.edges_matrix)
         for neighbor in neighbors:
             if distance[neighbor] == -1:
                 t, f = self.dfs_visit(neighbor, distance, f, t)
@@ -80,6 +87,8 @@ class Digraph:
         unconnected_components = [i for i, item in enumerate(connected_components) if item != biggest_component]
         self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 0)
         self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 1)
+        self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 0)
+        self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
         self.vertices = self.adjacency_matrix.shape[0]
 
     def bellman_ford(self, s) -> Union[np.ndarray, bool]:
@@ -92,13 +101,13 @@ class Digraph:
         for i in range(self.vertices-1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
-                    if self.adjacency_matrix[j][k] != 0:
+                    if self.edges_matrix[j][k] != 0:
                         if d[k] > d[j] + self.adjacency_matrix[j][k]:
                             d[k] = d[j] + self.adjacency_matrix[j][k]
                             vertices[k] = j
         for i in range(self.vertices):
             for j in range(self.vertices):
-                if self.adjacency_matrix[i][j] != 0:
+                if self.edges_matrix[i][j] != 0:
                     if d[j] > d[i] + self.adjacency_matrix[i][j]:
                         return False
         return d, vertices
@@ -155,12 +164,14 @@ class Digraph:
             raise Exception("Bad probability")
 
         self.adjacency_matrix = np.zeros((vertices, vertices), dtype=int)
+        self.edges_matrix = np.zeros((vertices, vertices), dtype=int)
         for i in range(vertices):
             for j in range(vertices):
                 if i != j:
                     r = random.random()
                     if r < probability and self.adjacency_matrix[j][i] == 0:
                         self.adjacency_matrix[i][j] = random.randint(a, b) if weight else 1
+                        self.edges_matrix[i][j] = 1
         self.vertices = self.adjacency_matrix.shape[0]
 
     def set_digraph(self, data) -> None:
