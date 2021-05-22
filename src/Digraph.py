@@ -15,13 +15,28 @@ class Digraph:
     def __init__(self):
         self.reader = GraphReader()
         # self.adjacency_matrix = None
-        self.adjacency_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
-                                          [1, 0, 1, 1, 1, 0, 1],
-                                          [0, 0, 0, 0, 0, 1, 0],
-                                          [0, 1, 0, 0, 0, 0, 1],
-                                          [0, 0, 0, 0, 0, 0, 1],
-                                          [0, 1, 0, 0, 0, 0, 0],
-                                          [0, 0, 0, 0, 0, 1, 0]], dtype=int)
+        # self.adjacency_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
+        #                                   [1, 0, 1, 1, 1, 0, 1],
+        #                                   [0, 0, 0, 0, 0, 1, 0],
+        #                                   [0, 1, 0, 0, 0, 0, 1],
+        #                                   [0, 0, 0, 0, 0, 0, 1],
+        #                                   [0, 1, 0, 0, 0, 0, 0],
+        #                                   [0, 0, 0, 0, 0, 1, 0]], dtype=int)
+        # self.edges_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
+        #                               [1, 0, 1, 1, 1, 0, 1],
+        #                               [0, 0, 0, 0, 0, 1, 0],
+        #                               [0, 1, 0, 0, 0, 0, 1],
+        #                               [0, 0, 0, 0, 0, 0, 1],
+        #                               [0, 1, 0, 0, 0, 0, 0],
+        #                               [0, 0, 0, 0, 0, 1, 0]], dtype=int)
+        # self.vertices = 7
+        self.adjacency_matrix = np.array([[0, 6, 3, 0, -1, 0, 0],
+                                          [10, 0, -5, -4, 4, 0, 4],
+                                          [0, 0, 0, 0, 0, 2, 0],
+                                          [0, 5, 0, 0, 0, 0, 9],
+                                          [0, 0, 0, 0, 0, 0, -4],
+                                          [0, 9, 0, 0, 0, 0, 0],
+                                          [0, 0, 0, 0, 0, 4, 0]], dtype=int)
         self.edges_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
                                       [1, 0, 1, 1, 1, 0, 1],
                                       [0, 0, 0, 0, 0, 1, 0],
@@ -30,6 +45,17 @@ class Digraph:
                                       [0, 1, 0, 0, 0, 0, 0],
                                       [0, 0, 0, 0, 0, 1, 0]], dtype=int)
         self.vertices = 7
+        # self.adjacency_matrix = np.array([[0, 3, 8, 0, -4],
+        #                                   [0, 0, 0, 1, 7],
+        #                                   [0, 4, 0, 0, 0],
+        #                                   [2, 0, -5, 0, 0],
+        #                                   [0, 0, 0, 6, 0]], dtype=int)
+        # self.edges_matrix = np.array([[0, 1, 1, 0, 1],
+        #                               [0, 0, 0, 1, 1],
+        #                               [0, 1, 0, 0, 0],
+        #                               [1, 0, 1, 0, 0],
+        #                               [0, 0, 0, 1, 0]], dtype=int)
+        # self.vertices = 5
 
     def kosaraju(self) -> np.ndarray:
         """Use the Kosaraju's algorithm to find connected components in graph"""
@@ -98,7 +124,7 @@ class Digraph:
         d = np.full(self.vertices, np.inf)
         d[s] = 0
         vertices = np.empty(self.vertices, dtype=int)
-        for i in range(self.vertices-1):
+        for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
                     if self.edges_matrix[j][k] != 0:
@@ -111,6 +137,82 @@ class Digraph:
                     if d[j] > d[i] + self.adjacency_matrix[i][j]:
                         return False
         return d, vertices
+
+    def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
+        """Initialize distances and positions arrays to perform Dijkstra's algorithm
+        :param starting_node: node to start with
+        """
+        distances = []
+        positions = []
+        for _ in self.adjacency_matrix:
+            distances.append(sys.maxsize)
+            positions.append(-1)
+
+        distances[starting_node] = 0
+        return distances, positions
+
+    def relax_dijkstra(self, distances, positions, u, u_neighbours):
+        for v in u_neighbours:
+            new_dist = self.adjacency_matrix[u][v] + distances[u]
+
+            if distances[v] > new_dist:
+                distances[v] = new_dist
+                positions[v] = u
+
+        return distances, positions
+
+    def dijkstra(self, starting_node) -> (list, list):
+        """ Perform Dijkstra's algorithm starting with given node s
+        :param starting_node: given node to start with
+        """
+        (distances, positions) = self.initialize_dijkstra_distances_positions(starting_node)
+        ready_nodes = []
+        while len(ready_nodes) != len(self.adjacency_matrix):
+            not_ready_nodes = [val if i not in ready_nodes else sys.maxsize for i, val in enumerate(distances)]
+            u = not_ready_nodes.index(min(not_ready_nodes))
+            ready_nodes.append(u)
+
+            u_neighbours = []
+            [u_neighbours.append(i) if val != 0 else None for i, val in enumerate(self.edges_matrix[u])]
+
+            distances, positions = self.relax_dijkstra(distances, positions, u, u_neighbours)
+
+        return distances, positions
+
+    def johnson(self) -> (bool, np.ndarray):
+        temp_adjacency = self.adjacency_matrix
+        self.vertices = self.vertices + 1
+        matrix = np.zeros((self.vertices, self.vertices), int)
+        matrix[1:self.vertices, 1:self.vertices] = self.adjacency_matrix
+        self.adjacency_matrix = matrix
+
+        matrix = np.zeros((self.vertices, self.vertices), int)
+        matrix[1:self.vertices, 1:self.vertices] = self.edges_matrix
+        matrix[0, 1:self.vertices] = np.ones((1, self.vertices - 1), int)
+        self.edges_matrix = matrix
+        w = np.zeros((self.vertices, self.vertices), int)
+        h = []
+        d = self.bellman_ford(0)
+        if d:
+            for v in range(self.vertices):
+                h.append(d[0][v])
+            for u in range(self.vertices):
+                for v in range(self.vertices):
+                    if self.edges_matrix[u][v] != 0:
+                        w[u][v] = self.adjacency_matrix[u][v] + h[u] - h[v]
+            self.adjacency_matrix = w[1:self.vertices, 1:self.vertices]
+            self.edges_matrix = self.edges_matrix[1:self.vertices, 1:self.vertices]
+            self.vertices = self.vertices - 1
+            h = h[1:]
+            D = np.zeros((self.vertices, self.vertices), int)
+            for u in range(self.vertices):
+                du, _ = self.dijkstra(u)
+                for v in range(self.vertices):
+                    D[u][v] = du[v] + h[v] - h[u]
+            self.adjacency_matrix = temp_adjacency
+            return True, D
+        else:
+            return False, []
 
     def read_data(self, representation, filename) -> bool:
         """Read a graph from a file using given representation"""
@@ -184,4 +286,3 @@ class Digraph:
     def __str__(self) -> str:
         """Returns the adjacency matrix"""
         return '\n'.join([' '.join([str(u) for u in row]) for row in self.adjacency_matrix])
-
