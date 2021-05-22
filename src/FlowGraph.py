@@ -11,7 +11,7 @@ from networkx.utils import pairwise
 
 
 def add_edge(my_dict, v1, v2):
-    capacity = random.randint(1, 11);
+    capacity = random.randint(1, 11)
     my_dict[v1].append({'other_v': v2, 'capacity': capacity})
 
 
@@ -27,7 +27,6 @@ def random_flow(layers_num):
     for el in vertices_in_layers:
         vertices.append(list(range(counter, counter+el)))
         counter += el
-    print(vertices)
 
     num_between_vertices = sum(vertices_in_layers)
     pairs = []
@@ -40,7 +39,6 @@ def random_flow(layers_num):
     my_dict = defaultdict(list)
 
     # basic connection between layers
-
     for i in range(layers_num+1):
         out_num = vertices_in_layers[i]
         in_num = vertices_in_layers[i+1]
@@ -70,21 +68,48 @@ def random_flow(layers_num):
                     f_c = 0
 
     additional = 2*layers_num
-    if layers_num == 2:
-        additional = layers_num
+    try:
+        for i in range(additional):
+            el = random.choice(pairs)
+            add_edge(my_dict, el[0], el[1])
+            pairs.remove((el[0], el[1]))
+            pairs.remove((el[1], el[0]))
+    except IndexError:
+        print('aaa')
 
-    for i in range(additional):
-        el = random.choice(pairs)
-        add_edge(my_dict, el[0], el[1])
-        pairs.remove((el[0], el[1]))
-        pairs.remove((el[1], el[0]))
+    return my_dict,vertices
 
-    return my_dict
+def draw_multilayer_graph(graph_dict,layers):
+    subset_color = [
+        "gold",
+        "violet",
+        "limegreen",
+        "darkorange",
+        "violet",
+        "green",
+        "blue"
+    ]
+    DG = nx.DiGraph()
+    for c,layer in enumerate(layers):
+        DG.add_nodes_from(layer,layer=c)
+        for vertex in layer:
+            vertex_data = graph_dict[vertex]
+            for el in vertex_data:
+                DG.add_edge(vertex,el['other_v'], weight=el['capacity'])
 
+    color = [subset_color[data["layer"]] for v, data in DG.nodes(data=True)]
+    pos = nx.multipartite_layout(DG, subset_key="layer")
+    plt.figure(figsize=(8, 8))
+    nx.draw(DG, pos, node_color=color, with_labels=True)
+    plt.axis("equal")
+    labels = nx.get_edge_attributes(DG, 'weight')
+    nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3)
+    plt.show()
 
 if __name__ == "__main__":
     multi_dict = random_flow(2)
     print(multi_dict)
+    draw_multilayer_graph(multi_dict[0],multi_dict[1])
     # DG = nx.DiGraph()
     # DG.add_nodes_from([1, 2, 3])
     # DG.add_edge((2, 3, {'weight': 3}))
@@ -124,24 +149,23 @@ if __name__ == "__main__":
     #G = multilayered_graph(*subset_sizes)
 
 
-    G = nx.DiGraph()
-    G.add_nodes_from(['s'], layer=1)
-    G.add_nodes_from([2,3],layer=2)
-    G.add_nodes_from([4, 5], layer=3)
-    G.add_nodes_from([6], layer=4)
-    G.add_edges_from([('s', 2), ('s', 3),(2, 4),(3,5),(4,6),(5,6)],weight=3)
-    G.add_edge(3,'s',weight=2)
+    # G = nx.DiGraph()
+    # G.add_nodes_from(['s'], layer=1)
+    # G.add_nodes_from([2,3],layer=2)
+    # G.add_nodes_from([4, 5], layer=3)
+    # G.add_nodes_from([6], layer=4)
+    # G.add_edges_from([('s', 2), ('s', 3),(2, 4),(3,5),(4,6),(5,6)],weight=3)
+    # G.add_edge(3,'s',weight=2)
+    #
+    # color = [subset_color[data["layer"]] for v, data in G.nodes(data=True)]
+    # pos = nx.multipartite_layout(G, subset_key="layer")
+    # plt.figure(figsize=(8, 8))
+    # nx.draw(G, pos, node_color=color, with_labels=True)
+    # plt.axis("equal")
+    # labels = nx.get_edge_attributes(G, 'weight')
+    # nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+    # plt.show()
 
-    color = [subset_color[data["layer"]] for v, data in G.nodes(data=True)]
-    print(color)
-    print(G.nodes(data=True))
-    pos = nx.multipartite_layout(G, subset_key="layer")
-    plt.figure(figsize=(8, 8))
-    nx.draw(G, pos, node_color=color, with_labels=True)
-    plt.axis("equal")
-    labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-    plt.show()
 
 
 
