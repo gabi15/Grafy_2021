@@ -1,5 +1,6 @@
 import sys
 from typing import Union
+import warnings
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -9,6 +10,8 @@ import GraphConverter
 from GraphReader import GraphReader
 from GraphReader import IncorrectInputException
 from GraphRepresentation import GraphRepresentation
+
+warnings.filterwarnings("ignore")
 
 
 class Digraph:
@@ -117,11 +120,11 @@ class Digraph:
         self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
         self.vertices = self.adjacency_matrix.shape[0]
 
-    def bellman_ford(self, s) -> Union[np.ndarray, bool]:
+    def bellman_ford(self, s, fix_for_johnson=False) -> Union[np.ndarray, bool]:
         """Find distances to all vertices from starting vertex"""
         if s > self.vertices:
             raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
-        d = np.full(self.vertices, np.inf)
+        d = np.full(self.vertices, np.inf, dtype=int)
         d[s] = 0
         vertices = np.empty(self.vertices, dtype=int)
         for i in range(self.vertices - 1):
@@ -135,7 +138,31 @@ class Digraph:
             for j in range(self.vertices):
                 if self.edges_matrix[i][j] != 0:
                     if d[j] > d[i] + self.adjacency_matrix[i][j]:
-                        return False
+                        if not fix_for_johnson:
+                            return False
+                        else:
+                            diff = d[j] - d[i] - self.adjacency_matrix[i][j]
+                            C = j
+                            for u in range(self.vertices):
+                                C = vertices[C]
+                            cycle = []
+                            v = C
+
+                            while True:
+                                cycle.append(v)
+                                if v == C and len(cycle) > 1:
+                                    break
+                                v = vertices[v]
+
+                            cycle.reverse()
+                            for v in cycle:
+                                print(v, end=" ")
+                            print()
+                            for u in range(len(cycle) - 1):
+                                if self.adjacency_matrix[cycle[u]][cycle[u + 1]] < 0:
+                                    self.adjacency_matrix[cycle[u]][cycle[u + 1]] = self.adjacency_matrix[cycle[u]][
+                                                                                        cycle[u + 1]] + diff
+                            self.bellman_ford(s, fix_for_johnson=True)
         return d, vertices
 
     def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
@@ -179,20 +206,20 @@ class Digraph:
 
         return distances, positions
 
-    def johnson(self) -> (bool, np.ndarray):
+    def johnson(self, fix=False) -> (bool, np.ndarray):
         temp_adjacency = self.adjacency_matrix
         self.vertices = self.vertices + 1
-        matrix = np.zeros((self.vertices, self.vertices), int)
+        matrix = np.zeros((self.vertices, self.vertices), dtype=int)
         matrix[1:self.vertices, 1:self.vertices] = self.adjacency_matrix
         self.adjacency_matrix = matrix
 
-        matrix = np.zeros((self.vertices, self.vertices), int)
+        matrix = np.zeros((self.vertices, self.vertices), dtype=int)
         matrix[1:self.vertices, 1:self.vertices] = self.edges_matrix
-        matrix[0, 1:self.vertices] = np.ones((1, self.vertices - 1), int)
+        matrix[0, 1:self.vertices] = np.ones((1, self.vertices - 1), dtype=int)
         self.edges_matrix = matrix
-        w = np.zeros((self.vertices, self.vertices), int)
+        w = np.zeros((self.vertices, self.vertices), dtype=int)
         h = []
-        d = self.bellman_ford(0)
+        d = self.bellman_ford(0, fix_for_johnson=fix)
         if d:
             for v in range(self.vertices):
                 h.append(d[0][v])
@@ -204,7 +231,7 @@ class Digraph:
             self.edges_matrix = self.edges_matrix[1:self.vertices, 1:self.vertices]
             self.vertices = self.vertices - 1
             h = h[1:]
-            D = np.zeros((self.vertices, self.vertices), int)
+            D = np.zeros((self.vertices, self.vertices), dtype=int)
             for u in range(self.vertices):
                 du, _ = self.dijkstra(u)
                 for v in range(self.vertices):

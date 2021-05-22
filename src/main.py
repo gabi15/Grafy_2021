@@ -41,7 +41,7 @@ def draw_digraph() -> None:
 
 def generate_digraph() -> None:
     n = input("Enter the number of graph vertices:\n")
-    p = input("Enter the number of graph edges:\n")
+    p = input("Enter the value of probability:\n")
     try:
         digraph.random_digraph(int(n), float(p))
     except Exception as e:
@@ -89,14 +89,14 @@ def shortest_paths():
         shortest_paths()
 
 
-def shortest_paths_johnson():
+def shortest_paths_johnson(fixing=False):
     try:
-        result = digraph.johnson()
+        result = digraph.johnson(fixing)
         if result[0]:
             print(result[1])
         else:
-            print("Negative values cycle detected")
-            main()
+            print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
+            shortest_paths_johnson(fixing=True)
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
         main()
