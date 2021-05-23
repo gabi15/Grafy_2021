@@ -33,7 +33,7 @@ def draw_digraph() -> None:
                 file_name = input("Specify file name for the graph:\n")
             except Exception as e:
                 print("Error: " + str(e) + "\nPlease try again\n")
-        digraph.visualise_digraph(bool(int(save_to_file)), file_name)
+        digraph.visualise_digraph(True, bool(int(save_to_file)), file_name)
     else:
         print("Wrong input, try again")
         draw_digraph()
@@ -47,6 +47,12 @@ def generate_digraph() -> None:
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
         generate_digraph()
+
+
+def generate_strongly_connected_digraph():
+    generate_digraph()
+    digraph.strongly_connected_component()
+    print("Generated strongly connected graph has " + str(digraph.vertices) + " vertices\n")
 
 
 def read_digraph() -> None:
@@ -67,29 +73,52 @@ def read_digraph() -> None:
         main()
 
 
+def shortest_paths():
+    s = input("Enter the starting node (max value = " + str(digraph.vertices) + "):\n")
+    try:
+        result = digraph.bellman_ford(int(s))
+        if result:
+            print("Distances from " + str(s) + " node:\n")
+            for i, item in enumerate(result[0]):
+                print(str(i) + " -> " + str(item))
+        else:
+            print("Negative values cycle detected. Try again with different node")
+            shortest_paths()
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        shortest_paths()
+
+
 def main() -> None:
+
     job = input("Select an option:\n"
                 "1 - Read the digraph from file \n"
                 "2 - Generate a random G(n,p) digraph \n"
+                "3 - Generate a random strongly conected digraph \n"
                 )
 
-    if job in ["1", "2"]:
+    if job in ["1", "2", "3"]:
         if job == "1":
             read_digraph()
         if job == "2":
             generate_digraph()
+        if job == "3":
+            generate_strongly_connected_digraph()
         while True:
             job = input("Choose what you want to do with the graph:\n"
-                        "1 - Save the graph to the file\n"
-                        "2 - Draw the graph\n"
-                        "3 - Exit the program\n"
+                        "1 - Find shortest path from starting vertex\n"
+                        "2 - Save the graph to the file\n"
+                        "3 - Draw the graph\n"
+                        "4 - Exit the program\n"
                         "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3"]:
+            if job in ["1", "2", "3", "4"]:
                 if job == "1":
-                    save_digraph()
+                    shortest_paths()
                 if job == "2":
-                    draw_digraph()
+                    save_digraph()
                 if job == "3":
+                    draw_digraph()
+                if job == "4":
                     sys.exit(1)
             else:
                 main()
