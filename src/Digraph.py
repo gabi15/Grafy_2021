@@ -21,13 +21,17 @@ class IncorrectInputException(Exception):
 
 warnings.filterwarnings("ignore")
 
+warnings.filterwarnings("ignore")
+
 
 class Digraph:
     def __init__(self):
         self.reader = GraphReader()
+
         self.adjacency_matrix = None
         self.edges_matrix = None
         self.vertices = 0
+
         # self.adjacency_matrix = np.array([[0, 3, 8, 0, -4],
         #                                   [0, 0, 0, 1, 7],
         #                                   [0, 4, 0, 0, 0],
@@ -41,6 +45,7 @@ class Digraph:
         # self.vertices = 5
 
     def kosaraju(self) -> Union[np.ndarray, int]:
+
         """Use the Kosaraju's algorithm to find connected components in graph"""
         distance = np.full(self.vertices, -1, dtype=int)
         f = np.full(self.vertices, -1, dtype=int)
@@ -58,6 +63,7 @@ class Digraph:
                 comp[v] = nr
                 comp = self.components_r(nr, v, vertices_arr_transposed, comp)
         return comp, nr
+
 
     def components_r(self, nr, v, matrix, comp) -> np.ndarray:
         """Set number of a component to vertex"""
@@ -88,8 +94,10 @@ class Digraph:
                 neighbors.append(i)
         return neighbors
 
+
     def strongly_connected_component(self, n, p) -> None:
         """Extract biggest strongly connected component from graph"""
+ 
         if self.adjacency_matrix is None:
             self.random_digraph(n, p)
         while self.kosaraju()[1] != 1:
@@ -285,6 +293,7 @@ class Digraph:
                     if r < probability and self.adjacency_matrix[j][i] == 0:
                         self.adjacency_matrix[i][j] = random.randint(a, b) if weight else 1
                         self.edges_matrix[i][j] = 1
+
         self.vertices = self.adjacency_matrix.shape[0]
 
     def __str__(self) -> str:

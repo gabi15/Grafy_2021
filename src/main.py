@@ -58,6 +58,12 @@ def generate_strongly_connected_digraph():
         generate_strongly_connected_digraph()
 
 
+def generate_strongly_connected_digraph():
+    generate_digraph()
+    digraph.strongly_connected_component()
+    print("Generated strongly connected graph has " + str(digraph.vertices) + " vertices\n")
+
+
 def read_digraph() -> None:
     filename_edges = input("Enter the name of the input file with digraph edges (stored in folder data):\n")
     filename_weights = input("Enter the name of the input file with digraph weights (stored in folder data):\n")
@@ -227,6 +233,35 @@ def connected_components():
             itemsstr += str(item)
             itemsstr += ", "
         print(str(i) + " -> " + itemsstr)
+
+
+def shortest_paths():
+    s = input("Enter the starting node (max value = " + str(digraph.vertices) + "):\n")
+    try:
+        result = digraph.bellman_ford(int(s))
+        if result:
+            print("Distances from " + str(s) + " node:\n")
+            for i, item in enumerate(result[0]):
+                print(str(i) + " -> " + str(item))
+        else:
+            print("Negative values cycle detected. Try again with different node")
+            shortest_paths()
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        shortest_paths()
+
+
+def shortest_paths_johnson(fixing=False):
+    try:
+        result = digraph.johnson(fixing)
+        if result[0]:
+            print(result[1])
+        else:
+            print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
+            shortest_paths_johnson(fixing=True)
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        main()
 
 
 def main() -> None:
