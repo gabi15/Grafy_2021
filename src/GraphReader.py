@@ -5,9 +5,9 @@ import numpy as np
 import GraphConverter
 from GraphConverter import IncorrectInputException
 from GraphConverter import has_zeros_on_diagonal
+from GraphConverter import is_symmetrical
 from GraphConverter import is_square
 from GraphRepresentation import GraphRepresentation
-import os
 
 
 class GraphReader:
@@ -16,7 +16,7 @@ class GraphReader:
 
     def read_data(self, representation, filename) -> np.ndarray:
         """Read a graph from a file using given representation"""
-        self.filename = os.getcwd() + "\\src\\" + filename
+        self.filename = "data/" + filename
         if representation == GraphRepresentation.ADJACENCY_MATRIX:
             return self.read_adjacency_matrix()
         if representation == GraphRepresentation.ADJACENCY_LIST:
@@ -38,6 +38,8 @@ class GraphReader:
         matrix = self.read_from_file()
         if not is_square(matrix):
             raise IncorrectInputException("Adjacency matrix built from input is not square")
+        if not is_symmetrical(matrix):
+            raise IncorrectInputException("Adjacency matrix built from input is not symmetrical")
         if not has_zeros_on_diagonal(matrix):
             raise IncorrectInputException("Adjacency matrix built from input has non zero value on diagonal")
         return matrix
@@ -64,3 +66,4 @@ class GraphReader:
         matrix = GraphConverter.convert_graph(adjacency_list, GraphRepresentation.ADJACENCY_LIST,
                                               GraphRepresentation.ADJACENCY_MATRIX)
         return matrix
+
