@@ -41,7 +41,7 @@ def draw_digraph() -> None:
 
 def generate_digraph() -> None:
     n = input("Enter the number of graph vertices:\n")
-    p = input("Enter the number of graph edges:\n")
+    p = input("Enter the value of probability:\n")
     try:
         digraph.random_digraph(int(n), float(p))
     except Exception as e:
@@ -89,8 +89,20 @@ def shortest_paths():
         shortest_paths()
 
 
-def main() -> None:
+def shortest_paths_johnson(fixing=False):
+    try:
+        result = digraph.johnson(fixing)
+        if result[0]:
+            print(result[1])
+        else:
+            print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
+            shortest_paths_johnson(fixing=True)
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        main()
 
+
+def main() -> None:
     job = input("Select an option:\n"
                 "1 - Read the digraph from file \n"
                 "2 - Generate a random G(n,p) digraph \n"
@@ -107,18 +119,21 @@ def main() -> None:
         while True:
             job = input("Choose what you want to do with the graph:\n"
                         "1 - Find shortest path from starting vertex\n"
-                        "2 - Save the graph to the file\n"
-                        "3 - Draw the graph\n"
-                        "4 - Exit the program\n"
+                        "2 - Find shortest paths using the Johnson algorithm\n"
+                        "3 - Save the graph to the file\n"
+                        "4 - Draw the graph\n"
+                        "5 - Exit the program\n"
                         "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3", "4"]:
+            if job in ["1", "2", "3", "4", "5"]:
                 if job == "1":
                     shortest_paths()
                 if job == "2":
-                    save_digraph()
+                    shortest_paths_johnson()
                 if job == "3":
-                    draw_digraph()
+                    save_digraph()
                 if job == "4":
+                    draw_digraph()
+                if job == "5":
                     sys.exit(1)
             else:
                 main()
