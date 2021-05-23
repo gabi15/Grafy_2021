@@ -24,13 +24,6 @@ def is_square(matrix) -> bool:
     return False
 
 
-def is_symmetrical(matrix) -> bool:
-    """Check if the matrix is symmetrical"""
-    transpose_matrix = matrix.transpose()
-    comparision = transpose_matrix == matrix
-    return comparision.all()
-
-
 def has_zeros_on_diagonal(matrix) -> bool:
     """Check if the matrix has zeros on diagonal"""
     if matrix.ndim == 0:
@@ -96,8 +89,6 @@ def convert_adj_list_to_adj_mat(adjacency_list) -> np.ndarray:
 
     except Exception:
         raise IncorrectInputException("Index of list is out of matrix bounds")
-    if not is_symmetrical(matrix):
-        raise IncorrectInputException("Matrix built from adjacency list is not symmetrical")
     if not has_zeros_on_diagonal(matrix):
         raise IncorrectInputException("Matrix built from adjacency list has non zero value on diagonal")
     return matrix
@@ -108,16 +99,15 @@ def convert_inc_mat_to_adj_mat(incidence_matrix) -> np.ndarray:
     matrix_size = len(incidence_matrix)
     matrix = np.zeros((matrix_size, matrix_size), dtype=int)
     for column in incidence_matrix.transpose():
-        edge = []
+        edge = {}
         for i, item in enumerate(column):
             if item == 1:
-                edge.append(i)
-        if len(edge) != 2:
+                edge[0] = i
+            if item == -1:
+                edge[1] = i
+        if 0 not in edge or 1 not in edge:
             raise IncorrectInputException("The edge should connect two different vertices")
-        matrix[edge[0]][edge[1]] = 1
         matrix[edge[1]][edge[0]] = 1
-    if not is_symmetrical(matrix):
-        raise IncorrectInputException("Matrix built from incidence matrix is not symmetrical")
     if not has_zeros_on_diagonal(matrix):
         raise IncorrectInputException("Matrix built from incidence matrix has non zero value on diagonal")
     return matrix
@@ -129,7 +119,7 @@ def convert_adj_mat_to_adj_list(graph) -> list:
     for row in graph:
         neighbors = []
         for i, item in enumerate(row):
-            if item == 1:
+            if item != 0:
                 neighbors.append(i + 1)
         adjacency_list.append(neighbors)
     return adjacency_list
@@ -139,11 +129,11 @@ def convert_adj_mat_to_inc_mat(graph) -> np.ndarray:
     """Convert an adjacency matrix to an incidence matrix"""
     incidence_matrix = []
     row_length = graph[0].size
-    for i, row in enumerate(graph):
-        for j in range(i):
-            if row[j] == 1:
+    for i in range(len(graph)):
+        for j in range(len(graph)):
+            if graph[i][j] != 0:
                 edge = np.zeros(row_length, dtype=int)
-                edge[i] = 1
+                edge[i] = -1
                 edge[j] = 1
                 incidence_matrix.append(edge)
     incidence_matrix = np.array(incidence_matrix).transpose()
