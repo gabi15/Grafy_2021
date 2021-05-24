@@ -93,6 +93,17 @@ def prepare_multilayer_graph(graph_dict, layers):
     return DG
 
 
+def prepare_multilayer_residual_graph(graph_dict, layers):
+    DG = nx.DiGraph()
+    for c, layer in enumerate(layers):
+        DG.add_nodes_from(layer, layer=c)
+        for vertex in layer:
+            vertex_data = graph_dict[vertex]
+            for el in vertex_data:
+                DG.add_edge(vertex, el['other_v'], weight=el['c_f'], flow=el['flow'])
+    return DG
+
+
 def draw_multilayer_graph(DG):
     subset_color = [
         "gold",
@@ -121,6 +132,27 @@ def create_residual_graph(G):
             my_dict[key].append({'other_v': el['other_v'], 'c_f': el['capacity'], 'flow': 0})
             my_dict[el['other_v']].append({'other_v': key, 'c_f': 0, 'flow': 0})
     return my_dict
+
+
+def draw_multilayer_residual_graph(DG):
+    subset_color = [
+        "gold",
+        "violet",
+        "limegreen",
+        "darkorange",
+        "violet",
+        "green",
+        "blue"
+    ]
+
+    color = [subset_color[data["layer"]] for v, data in DG.nodes(data=True)]
+    pos = nx.multipartite_layout(DG, subset_key="layer")
+    plt.figure(figsize=(8, 8))
+    nx.draw(DG, pos, node_color=color, with_labels=True)
+    # plt.axis("equal")
+    labels = nx.get_edge_attributes(DG, 'flow')
+    nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3, rotate=False)
+    plt.show()
 
 
 def BFS(G):
@@ -173,43 +205,48 @@ def find_el(d, v1, v2):
 
 def ford_fulkerson(G):
     Gf = create_residual_graph(G)
+    print('created gf{}'.format(Gf))
 
     while BFS(Gf) is not None:
-        p = BFS(G)
+        p = BFS(Gf)
         my_list = readableBFS(p)
+        print("found path: {}".format(p))
         c_fs = []
         #finding c_f for augmenting path
-        for i in range(len(my_list)-2):
-            el = find_el(my_list[i], my_list[i+1])
+        for i in range(len(my_list)-1):
+            el = find_el(Gf, my_list[i], my_list[i+1])
             c_fs.append(el["c_f"])
         c_f = min(c_fs)
+        print("bottle_neck:{}".format(c_f))
 
         #changing flow in augmenting path
-        for i in range(len(my_list)-2):
+        for i in range(len(my_list)-1):
             el = find_el(Gf, my_list[i], my_list[i+1])
             if is_edge_in_graph(G, my_list[i], my_list[i+1]):
                 el['flow'] += c_f
-                el['c_f'] -= c_f
             else:
                 el['flow'] -= c_f
-                el['c_f'] = el['flow']
+            el['c_f'] -= c_f
+            reverse_el = find_el(Gf, my_list[i+1], my_list[i])
+            reverse_el['c_f'] += c_f
+        print(Gf)
+    return Gf
+
 
 
 
 
 if __name__ == "__main__":
-    multi_dict = random_flow(2)
-    # graph = prepare_multilayer_graph(multi_dict[0], multi_dict[1])
-    # draw_multilayer_graph(graph)
-    # print(multi_dict[0])
-    # gf = create_residual_graph(multi_dict[0])
-    # print(gf)
+    multi_dict = random_flow(3)
+    graph = prepare_multilayer_graph(multi_dict[0], multi_dict[1])
+    draw_multilayer_graph(graph)
+    print(multi_dict[0])
     # p = BFS(gf)
     # print(p)
     # print(readableBFS(p))
-
-
-    print(multi_dict[0])
+    my_gf = ford_fulkerson(multi_dict[0])
+    residual_graph = prepare_multilayer_residual_graph(my_gf, multi_dict[1])
+    draw_multilayer_residual_graph(residual_graph)
 
 
     # el[1]['c']=5
