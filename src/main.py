@@ -1,24 +1,26 @@
 import sys
+from FlowGraph import FlowGraph, generate_random_flow_graph, prepare_multilayer_graph,draw_multilayer_graph_with_flow,\
+    draw_multilayer_graph, ford_fulkerson
 
-from Graph import Graph
-from RandomGraphGenerator import *
 
-
-def save_graph() -> None:
-    representation = input("Select an output representation:\n"
-                               "1 - Adjacency matrix\n"
-                               "2 - Adjacency list\n"
-                               "3 - Incidence matrix\n"
-                               )
-    if representation in ["1", "2", "3"]:
-        filename = input("Insert an output filename:\n")
-        if graph.save_to_file(GraphRepresentation(int(representation)), filename):
-            print("Completed. Check folder data")
-        else:
-            print("An error occurred while saving the graph")
+def draw_graph_with_flow() -> None:
+    save_to_file = input("Do you want to save image to a file? Select an option:\n"
+                             "0 - No\n"
+                             "1 - Yes\n"
+                             )
+    if save_to_file in ["0", "1"]:
+        file_name = ""
+        if save_to_file == "1":
+            try:
+                file_name = input("Specify file name for the graph:\n")
+            except Exception as e:
+                print("Error: " + str(e) + "\nPlease try again\n")
+        return_g = ford_fulkerson(flow_graph.flow_dict)
+        residual_graph = prepare_multilayer_graph(return_g, flow_graph.layers)
+        draw_multilayer_graph_with_flow(residual_graph, bool(int(save_to_file)), file_name)
     else:
-        print("Wrong representation selected, try again")
-        save_graph()
+        print("Wrong input, try again")
+        draw_graph_with_flow()
 
 
 def draw_graph() -> None:
@@ -33,79 +35,33 @@ def draw_graph() -> None:
                 file_name = input("Specify file name for the graph:\n")
             except Exception as e:
                 print("Error: " + str(e) + "\nPlease try again\n")
-        graph.visualise_graph_on_circle(bool(int(save_to_file)), file_name)
+        multi_dict = generate_random_flow_graph(2)
+        graph = prepare_multilayer_graph(multi_dict[0], multi_dict[1])
+        flow_graph.set_flow_dict(multi_dict[0])
+        flow_graph.set_layers(multi_dict[1])
+        draw_multilayer_graph(graph, bool(int(save_to_file)), file_name)
     else:
         print("Wrong input, try again")
         draw_graph()
 
 
-def generate_graph() -> None:
-    graph_type = input("Select type of the graph:\n"
-                           "1 - G(n,l)\n"
-                           "2 - G(n,p)\n"
-                           "Press any other key to return to the main menu\n"
-                           )
-    if graph_type in ["1", "2"]:
-        n = input("Enter the number of graph vertices:\n")
-        if graph_type == "1":
-            l = input("Enter the number of graph edges:\n")
-            try:
-                graph.set_graph(random_graph_edges(int(n), int(l)))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                generate_graph()
-        if graph_type == "2":
-            p = input("Enter the probability in range [0,1]:\n")
-            try:
-                graph.set_graph(random_graph_probability(int(n), float(p)))
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                generate_graph()
-    else:
-        main()
-
-
-def read_graph() -> None:
-    representation = input("Enter a representation of the input:\n"
-                               "1 - Adjacency matrix\n"
-                               "2 - Adjacency list\n"
-                               "3 - Incidence matrix\n"
-                               "Press any other key to return to the main menu\n"
-                               )
-    if representation in ["1", "2", "3"]:
-        filename = input("Enter the name of the input file (stored in folder data):\n")
-        try:
-            graph.read_data(GraphRepresentation(int(representation)), filename)
-        except Exception as e:
-            print("Error: " + str(e) + "\nPlease try again\n")
-            read_graph()
-    else:
-        main()
-
-
 def main() -> None:
     job = input("Select an option:\n"
-                    "1 - Read the graph from file \n"
-                    "2 - Generate a random graph \n"
+                    "1 - Generate random flow graph\n"
                     )
 
-    if job in ["1", "2"]:
+    if job in ["1"]:
         if job == "1":
-            read_graph()
-        if job == "2":
-            generate_graph()
+            draw_graph()
         while True:
             job = input("Choose what you want to do with the graph:\n"
-                            "1 - Save the graph to the file\n"
-                            "2 - Draw the graph\n"
-                            "3 - Exit the program\n"
+                            "1 - find max flow\n"
+                            "2 - Exit the program\n"
                             "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3"]:
+            if job in ["1", "2"]:
                 if job == "1":
-                    save_graph()
+                    draw_graph_with_flow()
                 if job == "2":
-                    draw_graph()
-                if job == "3":
                     sys.exit(1)
             else:
                 main()
@@ -115,5 +71,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    graph = Graph()
+    flow_graph = FlowGraph()
     main()
