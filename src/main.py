@@ -104,6 +104,7 @@ def perform_johnson(fixing=False):
         result = digraph.johnson(fixing)
         if result[0]:
             print("\nDistances matrix:")
+            print(result[1])
         else:
             print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
             perform_johnson(fixing=True)
