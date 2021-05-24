@@ -77,9 +77,12 @@ def perform_shortest_paths(s):
     try:
         result = digraph.shortest_paths_bellman(s)
         if result is not False:
-            print("Distances from " + str(s) + " node:\n")
+            print("\nDistances from " + str(s) + " node:")
             for i, item in enumerate(result[0]):
                 print(str(i) + " -> " + str(item))
+            print("Predecessors:")
+            for i, item in enumerate(result[1]):
+                print(str(i) + ": " + str(item))
             return True
         else:
             print("Negative values cycle detected. Try again with different node")
@@ -101,7 +104,6 @@ def perform_johnson(fixing=False):
         result = digraph.johnson(fixing)
         if result[0]:
             print("\nDistances matrix:")
-            print(result[1])
         else:
             print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
             perform_johnson(fixing=True)
@@ -201,13 +203,9 @@ def run_cmd_app(args):
     if args.shortest_paths_bellman is not None:
         try:
             starting_node = args.shortest_paths_bellman
-            print("Shortest paths starting at node: " + str(args.shortest_paths_bellman) +" \n")
             perform_shortest_paths(starting_node)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
-            sys.exit(1)
-    if args.shortest_paths_johnson:
-        if not perform_johnson():
             sys.exit(1)
     if args.draw is not None:
         if args.draw is not True:
@@ -219,6 +217,9 @@ def run_cmd_app(args):
                 sys.exit(1)
         else:
             digraph.visualise_digraph(True)
+    if args.shortest_paths_johnson:
+        if not perform_johnson():
+            sys.exit(1)
     if args.save is not None:
         if args.save[1] in ["1", "2", "3"]:
             representation = int(args.save[1])

@@ -44,11 +44,12 @@ class Digraph:
         t = 0
         for v in range(self.vertices):
             if distance[v] == -1:
-                t, f = self.dfs_visit(v, distance, f, t)
+                t, f, distance = self.dfs_visit(v, distance, f, t)
         vertices_arr_transposed = self.edges_matrix.transpose()
         nr = 0
         comp = np.full(self.vertices, -1, dtype=int)
         arr = np.argsort(f)[::-1]
+
         for v in arr:
             if comp[v] == -1:
                 nr += 1
@@ -73,10 +74,10 @@ class Digraph:
         neighbors = self.neighbors(v, self.edges_matrix)
         for neighbor in neighbors:
             if distance[neighbor] == -1:
-                t, f = self.dfs_visit(neighbor, distance, f, t)
+                t, f, distance = self.dfs_visit(neighbor, distance, f, t)
         t += 1
         f[v] = t
-        return t, f
+        return t, f, distance
 
     def neighbors(self, vertex, matrix) -> list:
         """Return list of neighbors for given vertex in digraph"""
@@ -170,7 +171,6 @@ class Digraph:
     def relax_dijkstra(self, distances, positions, u, u_neighbours):
         for v in u_neighbours:
             new_dist = self.adjacency_matrix[u][v] + distances[u]
-
             if distances[v] > new_dist:
                 distances[v] = new_dist
                 positions[v] = u
@@ -234,6 +234,7 @@ class Digraph:
         """Read a graph from a file using given representation"""
         self.adjacency_matrix = self.reader.read_data(filename_weights)
         self.edges_matrix = self.reader.read_data(filename_edges)
+        self.vertices = self.adjacency_matrix.shape[0]
         if self.adjacency_matrix is None or self.edges_matrix is None:
             return False
         if self.adjacency_matrix.shape != self.edges_matrix.shape:
