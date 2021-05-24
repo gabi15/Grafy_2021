@@ -266,7 +266,7 @@ class Digraph:
     def visualise_digraph(self, weight=False, save_to_file=False, file_name="") -> None:
         """Visualize directed graph"""
         G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
-        layout = nx.spiral_layout(G)
+        layout = nx.circular_layout(G)
         nx.draw(G, layout, with_labels=True)
 
         if weight:
