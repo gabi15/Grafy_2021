@@ -2,7 +2,14 @@ import warnings
 
 import numpy as np
 
-from Digraph import IncorrectInputException
+class IncorrectInputException(Exception):
+    """Exception raised in case of bad input"""
+
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return "Incorrect input - " + self.message
 
 
 class GraphReader:

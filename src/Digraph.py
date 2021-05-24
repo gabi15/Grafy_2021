@@ -21,8 +21,6 @@ class IncorrectInputException(Exception):
 
 warnings.filterwarnings("ignore")
 
-warnings.filterwarnings("ignore")
-
 
 class Digraph:
     def __init__(self):
@@ -107,7 +105,7 @@ class Digraph:
         """Find distances to all vertices from starting vertex"""
         if s > self.vertices:
             raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
-        d = np.full(self.vertices, np.inf, dtype=int)
+        d = np.full(self.vertices, np.inf)
         d[s] = 0
         vertices = np.empty(self.vertices, dtype=int)
         for i in range(self.vertices - 1):
@@ -121,7 +119,7 @@ class Digraph:
             for j in range(self.vertices):
                 if self.edges_matrix[i][j] != 0:
                     if d[j] > d[i] + self.adjacency_matrix[i][j]:
-                        if not fix_for_johnson:
+                        if fix_for_johnson is False:
                             return False
                         else:
                             diff = d[j] - d[i] - self.adjacency_matrix[i][j]
