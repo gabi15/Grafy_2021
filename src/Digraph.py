@@ -6,17 +6,11 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import random
+
+import GraphConverter
+from GraphRepresentation import GraphRepresentation
 from GraphReader import GraphReader
-
-
-class IncorrectInputException(Exception):
-    """Exception raised in case of bad input"""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return "Incorrect input - " + self.message
+from GraphConverter import IncorrectInputException
 
 
 warnings.filterwarnings("ignore")
@@ -146,7 +140,7 @@ class Digraph:
                             self.bellman_ford(s, fix_for_johnson=True)
         return d, vertices
 
-    def shortest_paths(self, s):
+    def shortest_paths_bellman(self, s):
         connected_components, nr = self.kosaraju()
         if nr != 1:
             print("Digraph is not strongly connected, extracting biggest connected component")
@@ -246,18 +240,26 @@ class Digraph:
             raise IncorrectInputException("Shapes of both matrices are not equal")
         return True
 
+    def get_digraph(self, output_representation) -> Union[np.ndarray, list, None]:
+        """Return a graph in the given output representation"""
+        return GraphConverter.convert_graph(self.edges_matrix, GraphRepresentation.ADJACENCY_MATRIX,
+                                            output_representation)
 
-    def save_to_file(self, filename_edges, filename_weights) -> bool:
-        """Save a graph to the files with given names"""
-        filename_edges = "data/" + filename_edges
-        filename_weights = "data/" + filename_weights
-        try:
-            with open(filename_edges, "w+") as f:
-                np.savetxt(f, self.edges_matrix, fmt="%i")
-            with open(filename_weights, "w+") as f:
-                np.savetxt(f, self.adjacency_matrix, fmt="%i")
+    def save_to_file(self, representation, filename) -> bool:
+        """Save a graph with given representation to the file with given name"""
+        filename = "data/" + filename
+        output_matrix = self.get_digraph(representation)
+        if isinstance(output_matrix, list):
+            with open(filename, "w+") as f:
+                for row in output_matrix:
+                    f.write(" ".join(str(item) for item in row))
+                    f.write("\n")
             return True
-        except:
+        elif isinstance(output_matrix, np.ndarray):
+            with open(filename, "w+") as f:
+                np.savetxt(f, output_matrix, fmt="%i")
+            return True
+        else:
             return False
 
     def visualise_digraph(self, weight=False, save_to_file=False, file_name="") -> None:

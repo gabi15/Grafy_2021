@@ -2,15 +2,23 @@ import sys
 import argparse
 
 from Digraph import Digraph
+from GraphConverter import GraphRepresentation
 
 
 def save_digraph() -> None:
-    filename_edges = input("Enter the name of the input file with digraph edges (stored in folder data):\n")
-    filename_weights = input("Enter the name of the input file with digraph weights (stored in folder data):\n")
-    if digraph.save_to_file(filename_edges, filename_weights):
-        print("Completed. Check folder data")
+    representation = input("Select an output representation:\n"
+                           "1 - Adjacency matrix\n"
+                           "2 - Adjacency list\n"
+                           "3 - Incidence matrix\n"
+                           )
+    if representation in ["1", "2", "3"]:
+        filename = input("Insert an output filename:\n")
+        if digraph.save_to_file(GraphRepresentation(int(representation)), filename):
+            print("Completed. Check folder data")
+        else:
+            print("An error occurred while saving the graph")
     else:
-        print("An error occurred while saving the graph")
+        print("Wrong representation selected, try again")
         save_digraph()
 
 
@@ -58,12 +66,6 @@ def generate_strongly_connected_digraph():
         generate_strongly_connected_digraph()
 
 
-def generate_strongly_connected_digraph():
-    generate_digraph()
-    digraph.strongly_connected_component()
-    print("Generated strongly connected graph has " + str(digraph.vertices) + " vertices\n")
-
-
 def read_digraph() -> None:
     filename_edges = input("Enter the name of the input file with digraph edges (stored in folder data):\n")
     filename_weights = input("Enter the name of the input file with digraph weights (stored in folder data):\n")
@@ -73,7 +75,7 @@ def read_digraph() -> None:
 
 def perform_shortest_paths(s):
     try:
-        result = digraph.shortest_paths(s)
+        result = digraph.shortest_paths_bellman(s)
         if result is not False:
             print("Distances from " + str(s) + " node:\n")
             for i, item in enumerate(result[0]):
@@ -98,6 +100,7 @@ def perform_johnson(fixing=False):
     try:
         result = digraph.johnson(fixing)
         if result[0]:
+            print("\nDistances matrix:")
             print(result[1])
         else:
             print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
@@ -126,7 +129,7 @@ group.add_argument('--generate-np',
                    metavar=('<nvertices>', '<probability>'),
                    action='store',
                    help='Generate an np graph.')
-group.add_argument('--generate-connected-digraph',
+group.add_argument('--generate-connected-np',
                    nargs=2,
                    metavar=('<nvertices>', '<probability>'),
                    action='store',
@@ -151,8 +154,12 @@ parser.add_argument('--draw',
 parser.add_argument('--save',
                     action='store',
                     nargs=2,
-                    metavar=('<filename edges>', '<filename weights>'),
-                    help='Save graph to the files.')
+                    metavar=('<filename>', '<representation>'),
+                    help='Save graph to the file with given name and representation.'
+                         'Available output representations:\n'
+                         '1 - adjacency matrix,\n '
+                         '2 - adjacency list, \n'
+                         '3 - incidence matrix \n')
 
 
 def perform_read(filename_edges, filename_weights):
@@ -170,7 +177,7 @@ def run_cmd_app(args):
         filename_weights = args.read[1]
         if not perform_read(filename_edges, filename_weights):
             sys.exit(1)
-    if args.generate_np is not None:
+    elif args.generate_np is not None:
         try:
             n = int(args.generate_np[0])
             p = float(args.generate_np[1])
@@ -178,10 +185,10 @@ def run_cmd_app(args):
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
-    if args.generate_connected_digraph is not None:
+    elif args.generate_connected_np is not None:
         try:
-            n = int(args.generate_connected_digraph[0])
-            p = float(args.generate_connected_digraph[1])
+            n = int(args.generate_connected_np[0])
+            p = float(args.generate_connected_np[1])
             digraph.strongly_connected_component(n, p)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
@@ -195,8 +202,7 @@ def run_cmd_app(args):
         try:
             starting_node = args.shortest_paths_bellman
             print("Shortest paths starting at node: " + str(args.shortest_paths_bellman) +" \n")
-            if not perform_shortest_paths(starting_node):
-                return False
+            perform_shortest_paths(starting_node)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
@@ -214,10 +220,11 @@ def run_cmd_app(args):
         else:
             digraph.visualise_digraph(True)
     if args.save is not None:
-        filename_edges = args.save[0]
-        filename_weights = args.save[1]
-        if not digraph.save_to_file(filename_edges, filename_weights):
-            sys.exit(1)
+        if args.save[1] in ["1", "2", "3"]:
+            representation = int(args.save[1])
+            filename = args.save[0]
+            if not digraph.save_to_file(GraphRepresentation(int(representation)), filename):
+                sys.exit(1)
 
 
 def connected_components():
@@ -235,7 +242,7 @@ def connected_components():
         print(str(i) + " -> " + itemsstr)
 
 
-def shortest_paths():
+def shortest_paths_bellman():
     s = input("Enter the starting node (max value = " + str(digraph.vertices) + "):\n")
     try:
         result = digraph.bellman_ford(int(s))
@@ -249,19 +256,6 @@ def shortest_paths():
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
         shortest_paths()
-
-
-def shortest_paths_johnson(fixing=False):
-    try:
-        result = digraph.johnson(fixing)
-        if result[0]:
-            print(result[1])
-        else:
-            print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
-            shortest_paths_johnson(fixing=True)
-    except Exception as e:
-        print("Error: " + str(e) + "\nPlease try again\n")
-        main()
 
 
 def main() -> None:
@@ -285,7 +279,7 @@ def main() -> None:
             while True:
                 job = input("Choose what you want to do with the graph:\n"
                             "1 - Find connected components using Kosaraju\'s algorithm\n"
-                            "2 - Find shortest path from starting vertex\n"
+                            "2 - Find shortest path from starting vertex using the Bellman\'s-Ford algorithm\n"
                             "3 - Find shortest paths using the Johnson algorithm\n"
                             "4 - Save the graph to the file\n"
                             "5 - Draw the graph\n"
@@ -295,7 +289,7 @@ def main() -> None:
                     if job == "1":
                         connected_components()
                     if job == "2":
-                        shortest_paths()
+                        shortest_paths_bellman()
                     if job == "3":
                         shortest_paths_johnson()
                     if job == "4":

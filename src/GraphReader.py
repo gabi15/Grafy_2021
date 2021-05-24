@@ -2,14 +2,7 @@ import warnings
 
 import numpy as np
 
-class IncorrectInputException(Exception):
-    """Exception raised in case of bad input"""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return "Incorrect input - " + self.message
+from GraphConverter import IncorrectInputException
 
 
 class GraphReader:
@@ -20,7 +13,7 @@ class GraphReader:
         """Read a matrix from a file"""
         warnings.filterwarnings("error")
         try:
-            matrix = np.loadtxt(self.filename, dtype=int)
+            matrix = np.loadtxt(filename_edges, dtype=int)
         except Exception as e:
             raise IncorrectInputException("an error occurred while reading the file:\n" + str(e))
         return matrix
