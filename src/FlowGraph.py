@@ -21,11 +21,12 @@ class FlowGraph:
 
 
 def add_edge(my_dict: dict, v1: int, v2: int) -> None:
+    """ Add edge to flow graph"""
     capacity = random.randint(1, 10)
     my_dict[v1].append({'other_v': v2, 'capacity': capacity, 'flow': 0})
 
 
-def generate_random_flow_graph(layers_num: int):
+def generate_random_flow_graph(layers_num: int) -> (dict, list):
     """
     generates random flow graph with random edges and capacities and zero flow
     :param layers_num: number of layers between source and sink
@@ -55,28 +56,39 @@ def generate_random_flow_graph(layers_num: int):
         in_num = vertices_in_layers[i + 1]
         diff = out_num - in_num
         if diff == 0:
-            for c in range(out_num):
-                add_edge(my_dict, vertices[i][c], vertices[i + 1][c])
-                pairs.remove((vertices[i][c], vertices[i + 1][c]))
-                pairs.remove((vertices[i + 1][c], vertices[i][c]))
+            vertices_shuffled = vertices[i+1][:]
+            random.shuffle(vertices_shuffled)
+            for c, el in enumerate(vertices_shuffled):
+                add_edge(my_dict, vertices[i][c], el)
+                pairs.remove((vertices[i][c], el))
+                pairs.remove((el, vertices[i][c]))
+        # more vertices in i layer than in i+1
         elif diff > 0:
-            s_c = 0
-            for c in range(out_num):
-                add_edge(my_dict, vertices[i][c], vertices[i + 1][s_c])
-                pairs.remove((vertices[i][c], vertices[i + 1][s_c]))
-                pairs.remove((vertices[i + 1][s_c], vertices[i][c]))
-                s_c += 1
-                if s_c >= in_num:
-                    s_c = 0
-        elif diff < 0:
-            f_c = 0
+            vertices_shuffled = vertices[i][:]
+            random.shuffle(vertices_shuffled)
             for c in range(in_num):
-                add_edge(my_dict, vertices[i][f_c], vertices[i + 1][c])
-                pairs.remove((vertices[i][f_c], vertices[i + 1][c]))
-                pairs.remove((vertices[i + 1][c], vertices[i][f_c]))
-                f_c += 1
-                if f_c >= out_num:
-                    f_c = 0
+                add_edge(my_dict, vertices_shuffled[c], vertices[i + 1][c])
+                pairs.remove((vertices_shuffled[c], vertices[i + 1][c]))
+                pairs.remove((vertices[i + 1][c], vertices_shuffled[c]))
+            for c in range(in_num, out_num):
+                random_sec = random.choice(vertices[i+1])
+                add_edge(my_dict, vertices_shuffled[c], random_sec)
+                pairs.remove((vertices_shuffled[c], random_sec))
+                pairs.remove((random_sec, vertices_shuffled[c]))
+        # more vertices in i+1 layer than in i
+        elif diff < 0:
+            vertices_shuffled = vertices[i+1][:]
+            random.shuffle(vertices_shuffled)
+            for c in range(out_num):
+                add_edge(my_dict, vertices[i][c], vertices_shuffled[c])
+                pairs.remove((vertices[i][c], vertices_shuffled[c]))
+                pairs.remove((vertices_shuffled[c], vertices[i][c]))
+            for c in range(out_num, in_num):
+                random_sec = random.choice(vertices[i])
+                add_edge(my_dict, random_sec, vertices_shuffled[c])
+                pairs.remove((vertices_shuffled[c], random_sec))
+                pairs.remove((random_sec, vertices_shuffled[c]))
+
     # adding random edges to the graph
     try:
         for i in range(2 * layers_num):
@@ -291,6 +303,10 @@ def ford_fulkerson(G: dict):
     return G
 
 
-
-
+if __name__=="__main__":
+    list1 = [1,2,3]
+    list2=list1[:]
+    random.shuffle(list2)
+    print(list1)
+    print(list2)
 
