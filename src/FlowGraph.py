@@ -107,7 +107,7 @@ def prepare_multilayer_graph(graph_dict: dict, layers: list) -> nx.DiGraph:
     prepare graph to drawing
     :param graph_dict: dictionary with edges - returned as first element from generate_random_flow_graph
     :param layers: list of vertices in layers - returned as first element from generate_random_flow_graph
-    :return:
+    :return: nx.Digraph
     """
     DG = nx.DiGraph()
     for c, layer in enumerate(layers):
@@ -119,29 +119,30 @@ def prepare_multilayer_graph(graph_dict: dict, layers: list) -> nx.DiGraph:
     return DG
 
 
-def draw_multilayer_graph(DG: nx.DiGraph, save_to_file: bool, file_name: str) -> None:
+def draw_multilayer_graph(DG: nx.DiGraph, show_flow: bool, save_to_file: bool, file_name: str) -> None:
     """
-    draws and optionaly saves to file graph
+    draws and optionally saves to file graph
     :param DG: nx.Digraph from prepare_multilayer_graph
+    :param DG: if true shows flow/capacity on every edge, if false shows only capacity
     :param save_to_file: if True saves to file
     :param file_name: name of file
-    :return:
+    :return: None
     """
-    subset_color = [
-        "gold",
-        "violet",
-        "limegreen",
-        "darkorange",
-        "violet",
-        "green",
-        "blue"
-    ]
+    subset_color = ["gold", "violet", "limegreen", "darkorange", "violet", "green", "blue"]
 
     color = [subset_color[data["layer"]] for v, data in DG.nodes(data=True)]
     pos = nx.multipartite_layout(DG, subset_key="layer")
     plt.figure(figsize=(8, 8))
     nx.draw(DG, pos, node_color=color, with_labels=True)
-    labels = nx.get_edge_attributes(DG, 'weight')
+    labels = {}
+    if show_flow is False:
+        labels = nx.get_edge_attributes(DG, 'weight')
+    else:
+        flows = nx.get_edge_attributes(DG, 'flow')
+        capacities = nx.get_edge_attributes(DG, 'weight')
+        for key in capacities:
+            labels[key] = str(flows[key]) + '/' + str(capacities[key])
+
     nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3, rotate=False)
 
     if save_to_file:
@@ -150,7 +151,8 @@ def draw_multilayer_graph(DG: nx.DiGraph, save_to_file: bool, file_name: str) ->
     plt.show()
 
 
-def create_residual_graph(G):
+def create_residual_graph(G: dict) -> dict:
+    """ creates residual graph from flow graph"""
     my_dict = defaultdict(list)
     for key in G:
         for el in G[key]:
@@ -159,11 +161,11 @@ def create_residual_graph(G):
     return my_dict
 
 
-def generate_possible_edges(vertices):
+def generate_possible_edges(vertices: list):
     """
     generates possible edges between vertices
-    :param vertices:
-    :return:
+    :param vertices: list of layers with vertices
+    :return: all possible valid connections between vertices in flow graph
     """
     vertices_without_st = vertices[1:-1]
     flattened_vertices = [i for el in vertices_without_st for i in el]
@@ -181,45 +183,11 @@ def generate_possible_edges(vertices):
     return res
 
 
-def draw_multilayer_graph_with_flow(DG, save_to_file, file_name):
-    """
-    draws and optionaly saves to file graph with flow and capacity
-    :param DG:
-    :param save_to_file:
-    :param file_name:
-    :return:
-    """
-    subset_color = [
-        "gold",
-        "violet",
-        "limegreen",
-        "darkorange",
-        "violet",
-        "green",
-        "blue"
-    ]
-
-    color = [subset_color[data["layer"]] for v, data in DG.nodes(data=True)]
-    pos = nx.multipartite_layout(DG, subset_key="layer")
-    plt.figure(figsize=(8, 8))
-    nx.draw(DG, pos, node_color=color, with_labels=True)
-    flows = nx.get_edge_attributes(DG, 'flow')
-    capacities = nx.get_edge_attributes(DG, 'weight')
-    labels = {}
-    for key in capacities:
-        labels[key] = str(flows[key])+'/'+str(capacities[key])
-    nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3, rotate=False)
-    if save_to_file:
-        plt.rcParams['savefig.format'] = 'png'
-        plt.savefig("data/" + file_name)
-    plt.show()
-
-
 def BFS(G: dict):
     """
     finds path using breadth first search algorithm
-    :param G:
-    :return:
+    :param G: flow graph
+    :return: dict of vertices and theirs predecessors if we cat reach 't' and none if not
     """
     d = {}
     p = {}
@@ -241,7 +209,8 @@ def BFS(G: dict):
     return None
 
 
-def readableBFS(p):
+def readableBFS(p: dict) -> list:
+    """ more readable path found in BFS returned as a list of ordered vertices"""
     vertex = 't'
     vertices = []
     while vertex is not None:
@@ -251,7 +220,7 @@ def readableBFS(p):
     return vertices
 
 
-def is_edge_in_graph(d, v1, v2):
+def is_edge_in_graph(d: dict, v1: int, v2: int) -> bool:
     my_v = list(filter(lambda vertex: vertex['other_v'] == v2, d[v1]))
     if len(my_v) == 0:
         return False
@@ -302,11 +271,4 @@ def ford_fulkerson(G: dict):
     print('Max_flow:{}'.format(max_flow))
     return G
 
-
-if __name__=="__main__":
-    list1 = [1,2,3]
-    list2=list1[:]
-    random.shuffle(list2)
-    print(list1)
-    print(list2)
 
