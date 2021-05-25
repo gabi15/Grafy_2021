@@ -20,12 +20,17 @@ class FlowGraph:
         self.layers = layers
 
 
-def add_edge(my_dict, v1, v2):
+def add_edge(my_dict: dict, v1: int, v2: int) -> None:
     capacity = random.randint(1, 10)
     my_dict[v1].append({'other_v': v2, 'capacity': capacity, 'flow': 0})
 
 
-def generate_random_flow_graph(layers_num):
+def generate_random_flow_graph(layers_num: int):
+    """
+    generates random flow graph with random edges and capacities and zero flow
+    :param layers_num: number of layers between source and sink
+    :return: dictionary of vertices and edges, list of vertices in layers
+    """
     # random number of vertices in layers
     vertices_in_layers = randint(2, high=layers_num + 1, size=layers_num)
     vertices_in_layers = np.insert(vertices_in_layers, 0, 1)
@@ -85,7 +90,13 @@ def generate_random_flow_graph(layers_num):
     return my_dict, vertices
 
 
-def prepare_multilayer_graph(graph_dict, layers):
+def prepare_multilayer_graph(graph_dict: dict, layers: list) -> nx.DiGraph:
+    """
+    prepare graph to drawing
+    :param graph_dict: dictionary with edges - returned as first element from generate_random_flow_graph
+    :param layers: list of vertices in layers - returned as first element from generate_random_flow_graph
+    :return:
+    """
     DG = nx.DiGraph()
     for c, layer in enumerate(layers):
         DG.add_nodes_from(layer, layer=c)
@@ -96,7 +107,14 @@ def prepare_multilayer_graph(graph_dict, layers):
     return DG
 
 
-def draw_multilayer_graph(DG,save_to_file, file_name):
+def draw_multilayer_graph(DG: nx.DiGraph, save_to_file: bool, file_name: str) -> None:
+    """
+    draws and optionaly saves to file graph
+    :param DG: nx.Digraph from prepare_multilayer_graph
+    :param save_to_file: if True saves to file
+    :param file_name: name of file
+    :return:
+    """
     subset_color = [
         "gold",
         "violet",
@@ -130,6 +148,11 @@ def create_residual_graph(G):
 
 
 def generate_possible_edges(vertices):
+    """
+    generates possible edges between vertices
+    :param vertices:
+    :return:
+    """
     vertices_without_st = vertices[1:-1]
     flattened_vertices = [i for el in vertices_without_st for i in el]
     res = []
@@ -147,6 +170,13 @@ def generate_possible_edges(vertices):
 
 
 def draw_multilayer_graph_with_flow(DG, save_to_file, file_name):
+    """
+    draws and optionaly saves to file graph with flow and capacity
+    :param DG:
+    :param save_to_file:
+    :param file_name:
+    :return:
+    """
     subset_color = [
         "gold",
         "violet",
@@ -173,7 +203,12 @@ def draw_multilayer_graph_with_flow(DG, save_to_file, file_name):
     plt.show()
 
 
-def BFS(G):
+def BFS(G: dict):
+    """
+    finds path using breadth first search algorithm
+    :param G:
+    :return:
+    """
     d = {}
     p = {}
     for key in G:
@@ -216,7 +251,12 @@ def find_el(d, v1, v2):
     return my_v[0]
 
 
-def ford_fulkerson(G):
+def ford_fulkerson(G: dict):
+    """
+    find max flow in flow graph
+    :param G: graph in which we want to find max flow
+    :return: graph with best flows
+    """
     Gf = create_residual_graph(G)
 
     while BFS(Gf) is not None:
