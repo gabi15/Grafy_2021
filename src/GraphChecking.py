@@ -51,4 +51,4 @@ def hamiltonian(matrix: np.ndarray, start: int = 1) -> (bool, list):
     path.append(start - 1)
     visited[start - 1] = True
     is_hamiltonian(matrix, path, visited, n)
-    return (True, path) if len(path) == n else (False, [])
+    return (True, [v + 1 for v in path]) if len(path) == n else (False, [])
