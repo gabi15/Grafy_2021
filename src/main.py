@@ -49,12 +49,12 @@ def draw_graph() -> None:
 
 def generate_graph() -> None:
     print("Select number of vertices and probability for the G(n,p) weighted graph:")
-    n = int(input("Enter the number of graph vertices:\n"))
-    p = float(input("Enter the probability in range [0,1]:\n"))
+    n = input("Enter the number of graph vertices:\n")
+    p = input("Enter the probability in range [0,1]:\n")
     try:
-        graph.set_graph(random_weighted_graph_probability(n, p))
+        graph.set_graph(random_weighted_graph_probability(int(n), float(p)))
         while max(graph.find_components()) > 1:
-            graph.set_graph(random_weighted_graph_probability(n, p))
+            graph.set_graph(random_weighted_graph_probability(int(n), float(p)))
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
         generate_graph()
@@ -63,19 +63,19 @@ def generate_graph() -> None:
 parser = argparse.ArgumentParser(description='Command line interface for graph app.')
 
 parser.add_argument('--generate-np',
-                   nargs=2,
-                   metavar=('<nvertices>', '<probability>'),
-                   action='store',
-                   required=True,
-                   help='Generate an np graph.')
+                    nargs=2,
+                    metavar=('<nvertices>', '<probability>'),
+                    action='store',
+                    required=True,
+                    help='Generate an np graph.')
 parser.add_argument('--shortest-paths',
-                   metavar='<starting_node>',
-                   type=int,
-                   action='store',
-                   help='Find shortest paths using Dijkstra algorithm.')
+                    metavar='<starting_node>',
+                    type=int,
+                    action='store',
+                    help='Find shortest paths using Dijkstra algorithm.')
 parser.add_argument('--distances-matrix',
-                   action='store_true',
-                   help='Find distances matrix.')
+                    action='store_true',
+                    help='Find distances matrix.')
 parser.add_argument('--center',
                     action='store_true',
                     help='Find center of the graph.')
@@ -125,7 +125,7 @@ def run_cmd_app(args):
     if args.shortest_paths is not None:
         try:
             starting_node = args.shortest_paths
-            print("Shortest paths starting at node: " + str(args.shortest_paths) +" \n")
+            print("Shortest paths starting at node: " + str(args.shortest_paths) + " \n")
             graph.print_dijkstra(starting_node)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
@@ -154,21 +154,35 @@ def run_cmd_app(args):
         find_minimal_spanning_tree()
 
 
+def read_graph() -> None:
+    filename = input("Enter the name of the input file (stored in folder data) with the adjacency matrix:\n")
+    if not perform_read(1, filename):
+        read_graph()
+
+
+def perform_read(representation: int, filename: str) -> bool:
+    try:
+        graph.read_data(GraphRepresentation(representation), filename)
+        return True
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        return False
+
+
 def find_shortest_paths():
     try:
         starting_node = input("Enter node to start with:\n")
         graph.print_dijkstra(int(starting_node))
-    except Exception as e:
+    except Exception:
         print("Wrong input, try again\n")
         find_shortest_paths()
 
 
 def find_distances_matrix():
-    for i, val in enumerate(graph.find_distances_matrix()):
-        print(f'{i}:', end='')
-        for v in val:
-            print(f' {int(v)}', end='')
-        print()
+    res = graph.find_distances_matrix()
+    format_row = "{:>8}" * len(res)
+    for row in res:
+        print(format_row.format(*row))
 
 
 def find_center():
@@ -195,37 +209,49 @@ def main() -> None:
         args = parser.parse_args()
         run_cmd_app(args)
     else:
-        generate_graph()
-        while True:
-            job = input("Choose what you want to do with the graph:\n"
-                        "1 - Save the graph to the file\n"
-                        "2 - Draw the graph\n"
-                        "3 - Find shortest paths\n"
-                        "4 - Find distances matrix\n"
-                        "5 - Find center\n"
-                        "6 - Find minimax center\n"
-                        "7 - Find minimal spanning tree\n"
-                        "8 - Exit the program\n"
-                        "Press any other key to return to the main menu\n")
-            if job in ["1", "2", "3", "4", "5", "6", "7", "8"]:
-                if job == "1":
-                    save_graph()
-                elif job == "2":
-                    draw_graph()
-                elif job == "3":
-                    find_shortest_paths()
-                elif job == "4":
-                    find_distances_matrix()
-                elif job == "5":
-                    find_center()
-                elif job == "6":
-                    find_minimax_center()
-                elif job == "7":
-                    find_minimal_spanning_tree()
-                elif job == "8":
-                    sys.exit(1)
-            else:
-                main()
+        job = input("Select an option:\n"
+                    "1 - Read the graph from file \n"
+                    "2 - Generate a random graph \n"
+                    )
+
+        if job in ["1", "2"]:
+            if job == "1":
+                read_graph()
+            if job == "2":
+                generate_graph()
+            while True:
+                job = input("Choose what you want to do with the graph:\n"
+                            "1 - Save the graph to the file\n"
+                            "2 - Draw the graph\n"
+                            "3 - Find shortest paths\n"
+                            "4 - Find distances matrix\n"
+                            "5 - Find center\n"
+                            "6 - Find minimax center\n"
+                            "7 - Find minimal spanning tree\n"
+                            "8 - Exit the program\n"
+                            "Press any other key to return to the main menu\n")
+                if job in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+                    if job == "1":
+                        save_graph()
+                    elif job == "2":
+                        draw_graph()
+                    elif job == "3":
+                        find_shortest_paths()
+                    elif job == "4":
+                        find_distances_matrix()
+                    elif job == "5":
+                        find_center()
+                    elif job == "6":
+                        find_minimax_center()
+                    elif job == "7":
+                        find_minimal_spanning_tree()
+                    elif job == "8":
+                        sys.exit(1)
+                else:
+                    main()
+        else:
+            print("Wrong option selected, try again")
+            main()
 
 
 if __name__ == "__main__":

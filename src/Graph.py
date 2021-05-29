@@ -48,7 +48,7 @@ class Graph:
 
     def visualize_graph_with_weights(self, save_to_file, file_name) -> None:
         """Visualize weighted graph"""
-        G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
+        G = nx.from_numpy_matrix(self.adjacency_matrix, create_using=nx.DiGraph)
         layout = nx.spring_layout(G)
         labels = nx.get_edge_attributes(G, "weight")
         nx.draw(G, layout, with_labels=True)
