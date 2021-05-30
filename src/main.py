@@ -248,7 +248,7 @@ def connected_components():
 
 
 def shortest_paths_bellman():
-    s = input("Enter the starting node (max value = " + str(digraph.vertices) + "):\n")
+    s = input("Enter the starting node (max value = " + str(digraph.vertices - 1) + "):\n")
     try:
         result = digraph.bellman_ford(int(s))
         if result:
@@ -256,7 +256,7 @@ def shortest_paths_bellman():
             for i, item in enumerate(result[0]):
                 paths = ""
                 if i != s:
-                    path = find_path(s, i, result[1])
+                    path = find_path(int(s), i, result[1])
                     for j, node in enumerate(path):
                         if j < len(path) - 1:
                             paths = paths + str(node) + " -> "
