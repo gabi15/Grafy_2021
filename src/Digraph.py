@@ -57,7 +57,6 @@ class Digraph:
                 comp = self.components_r(nr, v, vertices_arr_transposed, comp)
         return comp, nr
 
-
     def components_r(self, nr, v, matrix, comp) -> np.ndarray:
         """Set number of a component to vertex"""
         neighbors = self.neighbors(v, matrix)
@@ -87,7 +86,6 @@ class Digraph:
                 neighbors.append(i)
         return neighbors
 
-
     def strongly_connected_component(self, n, p) -> None:
         """Extract biggest strongly connected component from graph"""
  
@@ -102,7 +100,7 @@ class Digraph:
             raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
         d = np.full(self.vertices, np.inf)
         d[s] = 0
-        vertices = np.empty(self.vertices, dtype=int)
+        vertices = np.empty(self.vertices)
         for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
@@ -114,7 +112,7 @@ class Digraph:
             for j in range(self.vertices):
                 if self.edges_matrix[i][j] != 0:
                     if d[j] > d[i] + self.adjacency_matrix[i][j]:
-                        if fix_for_johnson is False:
+                        if not fix_for_johnson:
                             return False
                         else:
                             diff = d[j] - d[i] - self.adjacency_matrix[i][j]

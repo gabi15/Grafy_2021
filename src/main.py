@@ -79,10 +79,10 @@ def perform_shortest_paths(s):
         if result is not False:
             print("\nDistances from " + str(s) + " node:")
             for i, item in enumerate(result[0]):
-                print(str(i) + " -> " + str(item))
+                print(str(i) + " -> " + str(int(item)))
             print("Predecessors:")
             for i, item in enumerate(result[1]):
-                print(str(i) + ": " + str(item))
+                print(str(i) + ": " + str(int(item)))
             return True
         else:
             print("Negative values cycle detected. Try again with different node")
@@ -251,7 +251,10 @@ def shortest_paths_bellman():
         if result:
             print("Distances from " + str(s) + " node:\n")
             for i, item in enumerate(result[0]):
-                print(str(i) + " -> " + str(item))
+                print(str(i) + " -> " + str(int(item)))
+            print("Predecessors:")
+            for i, item in enumerate(result[1]):
+                print(str(i) + ": " + str(int(item)))
         else:
             print("Negative values cycle detected. Try again with different node")
             shortest_paths()
