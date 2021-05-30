@@ -81,7 +81,7 @@ class Digraph:
             raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
         d = np.full(self.vertices, np.inf)
         d[s] = 0
-        vertices = np.empty(self.vertices)
+        vertices = np.empty(self.vertices, dtype=int)
         for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
