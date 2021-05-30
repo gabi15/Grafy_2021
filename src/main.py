@@ -23,21 +23,13 @@ def save_digraph() -> None:
 
 
 def draw_digraph() -> None:
-    save_to_file = input("Do you want to save image to a file? Select an option:\n"
-                         "0 - No\n"
-                         "1 - Yes\n"
-                         )
-    if save_to_file in ["0", "1"]:
-        file_name = ""
-        if save_to_file == "1":
-            try:
-                file_name = input("Specify file name for the graph:\n")
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-        digraph.visualise_digraph(True, bool(int(save_to_file)), file_name)
-    else:
-        print("Wrong input, try again")
+    try:
+        file_name = input("Specify file name for the graph:\n")
+        digraph.visualise_digraph(True, file_name)
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
         draw_digraph()
+
 
 
 def generate_digraph() -> None:
@@ -104,7 +96,9 @@ def perform_johnson(fixing=False):
         result = digraph.johnson(fixing)
         if result[0]:
             print("\nDistances matrix:")
-            print(result[1])
+            format_row = "{:>5}" * len(result[1])
+            for row in result[1]:
+                print(format_row.format(*row))
         else:
             print("Negative values cycle detected. Weights will be changed so that no negative cycles exists.")
             perform_johnson(fixing=True)

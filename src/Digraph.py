@@ -1,19 +1,14 @@
 import sys
 from typing import Union
-import warnings
 
-import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 import random
+import graphviz as gv
 
 import GraphConverter
 from GraphRepresentation import GraphRepresentation
 from GraphReader import GraphReader
 from GraphConverter import IncorrectInputException
-
-
-warnings.filterwarnings("ignore")
 
 
 class Digraph:
@@ -24,20 +19,7 @@ class Digraph:
         self.edges_matrix = None
         self.vertices = 0
 
-        # self.adjacency_matrix = np.array([[0, 3, 8, 0, -4],
-        #                                   [0, 0, 0, 1, 7],
-        #                                   [0, 4, 0, 0, 0],
-        #                                   [2, 0, -5, 0, 0],
-        #                                   [0, 0, 0, 6, 0]], dtype=int)
-        # self.edges_matrix = np.array([[0, 1, 1, 0, 1],
-        #                               [0, 0, 0, 1, 1],
-        #                               [0, 1, 0, 0, 0],
-        #                               [1, 0, 1, 0, 0],
-        #                               [0, 0, 0, 1, 0]], dtype=int)
-        # self.vertices = 5
-
     def kosaraju(self) -> Union[np.ndarray, int]:
-
         """Use the Kosaraju's algorithm to find connected components in graph"""
         distance = np.full(self.vertices, -1, dtype=int)
         f = np.full(self.vertices, -1, dtype=int)
@@ -88,7 +70,6 @@ class Digraph:
 
     def strongly_connected_component(self, n, p) -> None:
         """Extract biggest strongly connected component from graph"""
- 
         if self.adjacency_matrix is None:
             self.random_digraph(n, p)
         while self.kosaraju()[1] != 1:
@@ -116,7 +97,7 @@ class Digraph:
                             return False
                         else:
                             diff = d[j] - d[i] - self.adjacency_matrix[i][j]
-                            C = j
+                            C = i
                             for u in range(self.vertices):
                                 C = vertices[C]
                             cycle = []
@@ -127,16 +108,12 @@ class Digraph:
                                 if v == C and len(cycle) > 1:
                                     break
                                 v = vertices[v]
-
                             cycle.reverse()
-                            for v in cycle:
-                                print(v, end=" ")
-                            print()
                             for u in range(len(cycle) - 1):
                                 if self.adjacency_matrix[cycle[u]][cycle[u + 1]] < 0:
                                     self.adjacency_matrix[cycle[u]][cycle[u + 1]] = self.adjacency_matrix[cycle[u]][
                                                                                         cycle[u + 1]] + diff
-                            self.bellman_ford(s, fix_for_johnson=True)
+                            return self.bellman_ford(s, fix_for_johnson=True)
         return d, vertices
 
     def shortest_paths_bellman(self, s):
@@ -226,6 +203,9 @@ class Digraph:
             self.adjacency_matrix = temp_adjacency
             return True, D
         else:
+            self.adjacency_matrix = temp_adjacency
+            self.edges_matrix = self.edges_matrix[1:self.vertices, 1:self.vertices]
+            self.vertices = self.vertices - 1
             return False, []
 
     def read_data(self, filename_edges, filename_weights) -> bool:
@@ -261,21 +241,22 @@ class Digraph:
         else:
             return False
 
-    def visualise_digraph(self, weight=False, save_to_file=False, file_name="") -> None:
+    def visualise_digraph(self, weight=False, file_name="") -> None:
         """Visualize directed graph"""
-        G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
-        layout = nx.circular_layout(G)
-        nx.draw(G, layout, with_labels=True)
+        f = gv.Digraph('digraph', format='eps', filename=file_name, directory="data")
+        f.attr(rankdir='LR', size='8,5')
 
-        if weight:
-            labels = nx.get_edge_attributes(G, "weight")
-            nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
+        f.attr('node', shape='circle')
 
-        if save_to_file:
-            plt.rcParams['savefig.format'] = 'png'
-            plt.savefig("data/" + file_name)
-        else:
-            plt.show()
+        for i in range(self.vertices):
+            for j in range(self.vertices):
+                if self.edges_matrix[i][j]:
+                    if weight:
+                        f.edge(str(i), str(j), label=str(self.adjacency_matrix[i][j]))
+                    else:
+                        f.edge(str(i), str(j))
+
+        f.view()
 
     def random_digraph(self, vertices, probability, weight=True, a=-5, b=10) -> None:
         if vertices < 2:
