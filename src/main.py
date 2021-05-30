@@ -145,9 +145,7 @@ parser.add_argument('--connected-components',
 parser.add_argument('--draw',
                     action='store',
                     metavar='<filename>',
-                    nargs='?',
-                    const=True,
-                    help='Draw the graph. Specify filename if you want to save the image to the file')
+                    help='Draw the graph. Specify file name for the graph image')
 parser.add_argument('--save',
                     action='store',
                     nargs=2,
@@ -203,15 +201,12 @@ def run_cmd_app(args):
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
     if args.draw is not None:
-        if args.draw is not True:
-            file_name = args.draw
-            try:
-                digraph.visualise_digraph(True, file_name)
-            except Exception as e:
-                print("Error: " + str(e) + "\nPlease try again\n")
-                sys.exit(1)
-        else:
-            digraph.visualise_digraph(True)
+        file_name = args.draw
+        try:
+            digraph.visualise_digraph(True, file_name)
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
     if args.shortest_paths_johnson:
         if not perform_johnson():
             sys.exit(1)
