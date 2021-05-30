@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import random
+
 import GraphConverter
-from GraphReader import GraphReader
-from GraphReader import IncorrectInputException
 from GraphRepresentation import GraphRepresentation
+from GraphReader import GraphReader
+from GraphConverter import IncorrectInputException
+
 
 warnings.filterwarnings("ignore")
 
@@ -17,37 +19,11 @@ warnings.filterwarnings("ignore")
 class Digraph:
     def __init__(self):
         self.reader = GraphReader()
-        # self.adjacency_matrix = None
-        # self.adjacency_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
-        #                                   [1, 0, 1, 1, 1, 0, 1],
-        #                                   [0, 0, 0, 0, 0, 1, 0],
-        #                                   [0, 1, 0, 0, 0, 0, 1],
-        #                                   [0, 0, 0, 0, 0, 0, 1],
-        #                                   [0, 1, 0, 0, 0, 0, 0],
-        #                                   [0, 0, 0, 0, 0, 1, 0]], dtype=int)
-        # self.edges_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
-        #                               [1, 0, 1, 1, 1, 0, 1],
-        #                               [0, 0, 0, 0, 0, 1, 0],
-        #                               [0, 1, 0, 0, 0, 0, 1],
-        #                               [0, 0, 0, 0, 0, 0, 1],
-        #                               [0, 1, 0, 0, 0, 0, 0],
-        #                               [0, 0, 0, 0, 0, 1, 0]], dtype=int)
-        # self.vertices = 7
-        self.adjacency_matrix = np.array([[0, 6, 3, 0, -1, 0, 0],
-                                          [10, 0, -5, -4, 4, 0, 4],
-                                          [0, 0, 0, 0, 0, 2, 0],
-                                          [0, 5, 0, 0, 0, 0, 9],
-                                          [0, 0, 0, 0, 0, 0, -4],
-                                          [0, 9, 0, 0, 0, 0, 0],
-                                          [0, 0, 0, 0, 0, 4, 0]], dtype=int)
-        self.edges_matrix = np.array([[0, 1, 1, 0, 1, 0, 0],
-                                      [1, 0, 1, 1, 1, 0, 1],
-                                      [0, 0, 0, 0, 0, 1, 0],
-                                      [0, 1, 0, 0, 0, 0, 1],
-                                      [0, 0, 0, 0, 0, 0, 1],
-                                      [0, 1, 0, 0, 0, 0, 0],
-                                      [0, 0, 0, 0, 0, 1, 0]], dtype=int)
-        self.vertices = 7
+
+        self.adjacency_matrix = None
+        self.edges_matrix = None
+        self.vertices = 0
+
         # self.adjacency_matrix = np.array([[0, 3, 8, 0, -4],
         #                                   [0, 0, 0, 1, 7],
         #                                   [0, 4, 0, 0, 0],
@@ -60,24 +36,26 @@ class Digraph:
         #                               [0, 0, 0, 1, 0]], dtype=int)
         # self.vertices = 5
 
-    def kosaraju(self) -> np.ndarray:
+    def kosaraju(self) -> Union[np.ndarray, int]:
+
         """Use the Kosaraju's algorithm to find connected components in graph"""
         distance = np.full(self.vertices, -1, dtype=int)
         f = np.full(self.vertices, -1, dtype=int)
         t = 0
         for v in range(self.vertices):
             if distance[v] == -1:
-                t, f = self.dfs_visit(v, distance, f, t)
+                t, f, distance = self.dfs_visit(v, distance, f, t)
         vertices_arr_transposed = self.edges_matrix.transpose()
         nr = 0
         comp = np.full(self.vertices, -1, dtype=int)
         arr = np.argsort(f)[::-1]
+
         for v in arr:
             if comp[v] == -1:
                 nr += 1
                 comp[v] = nr
                 comp = self.components_r(nr, v, vertices_arr_transposed, comp)
-        return comp
+        return comp, nr
 
     def components_r(self, nr, v, matrix, comp) -> np.ndarray:
         """Set number of a component to vertex"""
@@ -95,10 +73,10 @@ class Digraph:
         neighbors = self.neighbors(v, self.edges_matrix)
         for neighbor in neighbors:
             if distance[neighbor] == -1:
-                t, f = self.dfs_visit(neighbor, distance, f, t)
+                t, f, distance = self.dfs_visit(neighbor, distance, f, t)
         t += 1
         f[v] = t
-        return t, f
+        return t, f, distance
 
     def neighbors(self, vertex, matrix) -> list:
         """Return list of neighbors for given vertex in digraph"""
@@ -108,25 +86,21 @@ class Digraph:
                 neighbors.append(i)
         return neighbors
 
-    def strongly_connected_component(self) -> None:
+    def strongly_connected_component(self, n, p) -> None:
         """Extract biggest strongly connected component from graph"""
-        connected_components = self.kosaraju()
-        components = np.unique(connected_components, return_counts=True)
-        biggest_component = components[0][(np.argmax(components[1]))]
-        unconnected_components = [i for i, item in enumerate(connected_components) if item != biggest_component]
-        self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 0)
-        self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 1)
-        self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 0)
-        self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
-        self.vertices = self.adjacency_matrix.shape[0]
+ 
+        if self.adjacency_matrix is None:
+            self.random_digraph(n, p)
+        while self.kosaraju()[1] != 1:
+            self.random_digraph(n, p)
 
     def bellman_ford(self, s, fix_for_johnson=False) -> Union[np.ndarray, bool]:
         """Find distances to all vertices from starting vertex"""
         if s > self.vertices:
             raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
-        d = np.full(self.vertices, np.inf, dtype=int)
+        d = np.full(self.vertices, np.inf)
         d[s] = 0
-        vertices = np.empty(self.vertices, dtype=int)
+        vertices = np.empty(self.vertices)
         for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
@@ -165,6 +139,20 @@ class Digraph:
                             self.bellman_ford(s, fix_for_johnson=True)
         return d, vertices
 
+    def shortest_paths_bellman(self, s):
+        connected_components, nr = self.kosaraju()
+        if nr != 1:
+            print("Digraph is not strongly connected, extracting biggest connected component")
+            components = np.unique(connected_components, return_counts=True)
+            biggest_component = components[0][(np.argmax(components[1]))]
+            unconnected_components = [i for i, item in enumerate(connected_components) if item != biggest_component]
+            self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 0)
+            self.adjacency_matrix = np.delete(self.adjacency_matrix, unconnected_components, 1)
+            self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 0)
+            self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
+            self.vertices = self.adjacency_matrix.shape[0]
+        return self.bellman_ford(s)
+
     def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
         """Initialize distances and positions arrays to perform Dijkstra's algorithm
         :param starting_node: node to start with
@@ -181,7 +169,6 @@ class Digraph:
     def relax_dijkstra(self, distances, positions, u, u_neighbours):
         for v in u_neighbours:
             new_dist = self.adjacency_matrix[u][v] + distances[u]
-
             if distances[v] > new_dist:
                 distances[v] = new_dist
                 positions[v] = u
@@ -241,16 +228,20 @@ class Digraph:
         else:
             return False, []
 
-    def read_data(self, representation, filename) -> bool:
+    def read_data(self, filename_edges, filename_weights) -> bool:
         """Read a graph from a file using given representation"""
-        self.adjacency_matrix = self.reader.read_data(representation, filename)
-        if self.adjacency_matrix is None:
+        self.adjacency_matrix = self.reader.read_data(filename_weights)
+        self.edges_matrix = self.reader.read_data(filename_edges)
+        self.vertices = self.adjacency_matrix.shape[0]
+        if self.adjacency_matrix is None or self.edges_matrix is None:
             return False
+        if self.adjacency_matrix.shape != self.edges_matrix.shape:
+            raise IncorrectInputException("Shapes of both matrices are not equal")
         return True
 
     def get_digraph(self, output_representation) -> Union[np.ndarray, list, None]:
         """Return a graph in the given output representation"""
-        return GraphConverter.convert_graph(self.adjacency_matrix, GraphRepresentation.ADJACENCY_MATRIX,
+        return GraphConverter.convert_graph(self.edges_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                                             output_representation)
 
     def save_to_file(self, representation, filename) -> bool:
@@ -273,7 +264,7 @@ class Digraph:
     def visualise_digraph(self, weight=False, save_to_file=False, file_name="") -> None:
         """Visualize directed graph"""
         G = nx.from_numpy_matrix(np.matrix(self.adjacency_matrix), create_using=nx.DiGraph)
-        layout = nx.spiral_layout(G)
+        layout = nx.circular_layout(G)
         nx.draw(G, layout, with_labels=True)
 
         if weight:
@@ -301,13 +292,7 @@ class Digraph:
                     if r < probability and self.adjacency_matrix[j][i] == 0:
                         self.adjacency_matrix[i][j] = random.randint(a, b) if weight else 1
                         self.edges_matrix[i][j] = 1
-        self.vertices = self.adjacency_matrix.shape[0]
 
-    def set_digraph(self, data) -> None:
-        """Sets the adjacency matrix"""
-        graph, representation = data
-        self.adjacency_matrix = GraphConverter.convert_graph(graph, representation,
-                                                             GraphRepresentation.ADJACENCY_MATRIX)
         self.vertices = self.adjacency_matrix.shape[0]
 
     def __str__(self) -> str:
