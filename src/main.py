@@ -61,12 +61,16 @@ def generate_graph() -> None:
 
 
 parser = argparse.ArgumentParser(description='Command line interface for graph app.')
-
-parser.add_argument('--generate-np',
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--read',
+                   action='store',
+                   metavar='<filename>',
+                   help='Read input from a file.'
+                        'Enter the name of the input file (stored in folder data) with the adjacency matrix.\n')
+group.add_argument('--generate-np',
                     nargs=2,
                     metavar=('<nvertices>', '<probability>'),
                     action='store',
-                    required=True,
                     help='Generate an np graph.')
 parser.add_argument('--shortest-paths',
                     metavar='<starting_node>',
@@ -103,7 +107,10 @@ parser.add_argument('--save',
 
 
 def run_cmd_app(args):
-    if args.generate_np is not None:
+    if args.read is not None:
+        if not perform_read(1, args.read):
+            sys.exit(1)
+    elif args.generate_np is not None:
         try:
             n = int(args.generate_np[0])
             p = float(args.generate_np[1])
