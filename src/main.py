@@ -64,17 +64,31 @@ def read_digraph() -> None:
     if not perform_read(filename_edges, filename_weights):
         read_digraph()
 
+def find_path(starting_point, target_point, arr):
+    node = target_point
+    paths_arr = []
+    while node != starting_point:
+        paths_arr.append(node)
+        node = int(arr[node])
+    paths_arr.append(starting_point)
+    paths_arr.reverse()
+    return paths_arr
 
 def perform_shortest_paths(s):
     try:
         result = digraph.shortest_paths_bellman(s)
-        if result is not False:
+        if result:
             print("\nDistances from " + str(s) + " node:")
             for i, item in enumerate(result[0]):
-                print(str(i) + " -> " + str(int(item)))
-            print("Predecessors:")
-            for i, item in enumerate(result[1]):
-                print(str(i) + ": " + str(int(item)))
+                paths = ""
+                if i != s:
+                    path = find_path(s, i, result[1])
+                    for j, node in enumerate(path):
+                        if j < len(path)-1:
+                            paths = paths + str(node) + " -> "
+                        else:
+                            paths = paths + str(node)
+                print(str(i) + " : " + str(int(item)) + ", path: " + paths)
             return True
         else:
             print("Negative values cycle detected. Try again with different node")
@@ -238,12 +252,17 @@ def shortest_paths_bellman():
     try:
         result = digraph.bellman_ford(int(s))
         if result:
-            print("Distances from " + str(s) + " node:\n")
+            print("\nDistances from " + str(s) + " node:")
             for i, item in enumerate(result[0]):
-                print(str(i) + " -> " + str(int(item)))
-            print("Predecessors:")
-            for i, item in enumerate(result[1]):
-                print(str(i) + ": " + str(int(item)))
+                paths = ""
+                if i != s:
+                    path = find_path(s, i, result[1])
+                    for j, node in enumerate(path):
+                        if j < len(path) - 1:
+                            paths = paths + str(node) + " -> "
+                        else:
+                            paths = paths + str(node)
+                print(str(i) + " : " + str(int(item)) + ", path: " + paths)
         else:
             print("Negative values cycle detected. Try again with different node")
             shortest_paths()
