@@ -134,16 +134,21 @@ def draw_multilayer_graph(DG: nx.DiGraph, show_flow: bool, save_to_file: bool, f
     pos = nx.multipartite_layout(DG, subset_key="layer")
     plt.figure(figsize=(8, 8))
     nx.draw(DG, pos, node_color=color, with_labels=True)
-    labels = {}
+    zero_labels = {}
+    non_zero_labels = {}
     if show_flow is False:
         labels = nx.get_edge_attributes(DG, 'weight')
+        nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3, rotate=False)
     else:
         flows = nx.get_edge_attributes(DG, 'flow')
         capacities = nx.get_edge_attributes(DG, 'weight')
         for key in capacities:
-            labels[key] = str(flows[key]) + '/' + str(capacities[key])
-
-    nx.draw_networkx_edge_labels(DG, pos, edge_labels=labels, label_pos=0.3, rotate=False)
+            if flows[key] == 0:
+                zero_labels[key] = str(flows[key]) + '/' + str(capacities[key])
+            else:
+                non_zero_labels[key] = str(flows[key]) + '/' + str(capacities[key])
+        nx.draw_networkx_edge_labels(DG, pos, edge_labels=zero_labels, label_pos=0.3, rotate=False)
+        nx.draw_networkx_edge_labels(DG, pos, edge_labels=non_zero_labels, label_pos=0.3, rotate=False, font_color="red")
 
     if save_to_file:
         plt.rcParams['savefig.format'] = 'png'
