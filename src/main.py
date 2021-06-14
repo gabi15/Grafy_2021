@@ -6,19 +6,15 @@ from GraphConverter import GraphRepresentation
 
 
 def save_digraph() -> None:
-    representation = input("Select an output representation:\n"
-                           "1 - Adjacency matrix\n"
-                           "2 - Adjacency list\n"
-                           "3 - Incidence matrix\n"
-                           )
-    if representation in ["1", "2", "3"]:
-        filename = input("Insert an output filename:\n")
-        if digraph.save_to_file(GraphRepresentation(int(representation)), filename):
+    filename_edges = input("Insert an output edges filename:\n")
+    filename_weights = input("Insert an output weights filename:\n")
+    if filename_weights != filename_edges:
+        if digraph.save_to_file(filename_edges, filename_weights):
             print("Completed. Check folder data")
         else:
             print("An error occurred while saving the graph")
     else:
-        print("Wrong representation selected, try again")
+        print("Output file names must not be equal, try again")
         save_digraph()
 
 
@@ -29,7 +25,6 @@ def draw_digraph() -> None:
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
         draw_digraph()
-
 
 
 def generate_digraph() -> None:
@@ -64,6 +59,7 @@ def read_digraph() -> None:
     if not perform_read(filename_edges, filename_weights):
         read_digraph()
 
+
 def find_path(starting_point, target_point, arr):
     node = target_point
     paths_arr = []
@@ -73,6 +69,7 @@ def find_path(starting_point, target_point, arr):
     paths_arr.append(starting_point)
     paths_arr.reverse()
     return paths_arr
+
 
 def perform_shortest_paths(s):
     try:
@@ -163,12 +160,8 @@ parser.add_argument('--draw',
 parser.add_argument('--save',
                     action='store',
                     nargs=2,
-                    metavar=('<filename>', '<representation>'),
-                    help='Save graph to the file with given name and representation.'
-                         'Available output representations:\n'
-                         '1 - adjacency matrix,\n '
-                         '2 - adjacency list, \n'
-                         '3 - incidence matrix \n')
+                    metavar=('<filename_edges>', '<filename_weights>'),
+                    help='Save graph to the files (separate file for graph edges and edge weights).')
 
 
 def perform_read(filename_edges, filename_weights):
@@ -225,11 +218,14 @@ def run_cmd_app(args):
         if not perform_johnson():
             sys.exit(1)
     if args.save is not None:
-        if args.save[1] in ["1", "2", "3"]:
-            representation = int(args.save[1])
-            filename = args.save[0]
-            if not digraph.save_to_file(GraphRepresentation(int(representation)), filename):
+        filename_edges = args.save[0]
+        filename_weights = args.save[1]
+        if filename_edges != filename_weights:
+            if not digraph.save_to_file(filename_edges, filename_weights):
                 sys.exit(1)
+        else:
+            print('Output file names must not be equal, try again')
+            sys.exit(1)
 
 
 def connected_components():

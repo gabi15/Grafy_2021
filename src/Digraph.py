@@ -224,22 +224,16 @@ class Digraph:
         return GraphConverter.convert_graph(self.edges_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                                             output_representation)
 
-    def save_to_file(self, representation, filename) -> bool:
+    def save_to_file(self, filename_edges, filename_weights) -> bool:
         """Save a graph with given representation to the file with given name"""
-        filename = "data/" + filename
-        output_matrix = self.get_digraph(representation)
-        if isinstance(output_matrix, list):
-            with open(filename, "w+") as f:
-                for row in output_matrix:
-                    f.write(" ".join(str(item) for item in row))
-                    f.write("\n")
-            return True
-        elif isinstance(output_matrix, np.ndarray):
-            with open(filename, "w+") as f:
-                np.savetxt(f, output_matrix, fmt="%i")
-            return True
-        else:
-            return False
+        filename_edges = "data/" + filename_edges
+        filename_weights = "data/" + filename_weights
+
+        with open(filename_edges, "w+") as f:
+            np.savetxt(f, self.adjacency_matrix, fmt="%i")
+        with open(filename_weights, "w+") as f:
+            np.savetxt(f, self.edges_matrix, fmt="%i")
+        return True
 
     def visualise_digraph(self, weight=False, file_name="") -> None:
         """Visualize directed graph"""
@@ -255,7 +249,6 @@ class Digraph:
                         f.edge(str(i), str(j), label=str(self.adjacency_matrix[i][j]))
                     else:
                         f.edge(str(i), str(j))
-
         f.view()
 
     def random_digraph(self, vertices, probability, weight=True, a=-5, b=10) -> None:
