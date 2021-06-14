@@ -1,6 +1,6 @@
 import sys
 import argparse
-
+import math
 from Digraph import Digraph
 from GraphConverter import GraphRepresentation
 
@@ -75,11 +75,11 @@ def perform_shortest_paths(s):
     try:
         result = digraph.shortest_paths_bellman(s)
         if result:
-            print("\nDistances from " + str(s) + " node:")
+            print("\nDistances from " + str(result[2]) + " node:")
             for i, item in enumerate(result[0]):
                 paths = ""
                 if i != s:
-                    path = find_path(s, i, result[1])
+                    path = find_path(result[2], i, result[1])
                     for j, node in enumerate(path):
                         if j < len(path)-1:
                             paths = paths + str(node) + " -> "
@@ -96,7 +96,7 @@ def perform_shortest_paths(s):
 
 
 def shortest_paths():
-    s = input("Enter the starting node (max value = " + str(digraph.vertices) + "):\n")
+    s = input("Enter the starting node (max value = " + str(digraph.vertices-1) + "):\n")
 
     if not perform_shortest_paths(int(s)):
         shortest_paths()
@@ -246,19 +246,18 @@ def connected_components():
 def shortest_paths_bellman():
     s = input("Enter the starting node (max value = " + str(digraph.vertices - 1) + "):\n")
     try:
-        result = digraph.bellman_ford(int(s))
+        result = digraph.shortest_paths_bellman(int(s))
         if result:
-            print("\nDistances from " + str(s) + " node:")
+            print("\nDistances from " + str(result[2]) + " node:")
             for i, item in enumerate(result[0]):
                 paths = ""
                 if i != s:
-                    path = find_path(int(s), i, result[1])
+                    path = find_path(result[2], i, result[1])
                     for j, node in enumerate(path):
-                        if j < len(path) - 1:
+                        if j < len(path)-1:
                             paths = paths + str(node) + " -> "
                         else:
                             paths = paths + str(node)
-                print(str(i) + " : " + str(int(item)) + ", path: " + paths)
         else:
             print("Negative values cycle detected. Try again with different node")
             shortest_paths()

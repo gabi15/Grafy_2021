@@ -78,10 +78,11 @@ class Digraph:
     def bellman_ford(self, s, fix_for_johnson=False) -> Union[np.ndarray, bool]:
         """Find distances to all vertices from starting vertex"""
         if s > self.vertices:
-            raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
+            raise IncorrectInputException("Starting vertex: " + str(s) + " is bigger than size of the graph")
         d = np.full(self.vertices, np.inf)
         d[s] = 0
-        vertices = np.empty(self.vertices, dtype=int)
+        vertices = np.empty(self.vertices)
+        vertices[:] = np.NaN
         for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
@@ -114,7 +115,7 @@ class Digraph:
                                     self.adjacency_matrix[cycle[u]][cycle[u + 1]] = self.adjacency_matrix[cycle[u]][
                                                                                         cycle[u + 1]] + diff
                             return self.bellman_ford(s, fix_for_johnson=True)
-        return d, vertices
+        return d, vertices, s
 
     def shortest_paths_bellman(self, s):
         connected_components, nr = self.kosaraju()
@@ -128,6 +129,9 @@ class Digraph:
             self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 0)
             self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
             self.vertices = self.adjacency_matrix.shape[0]
+            if s >= self.vertices:
+                print("Current digraph size is smaller than the starting point that you specified. Displaying paths for the last node")
+                s = self.vertices - 1
         return self.bellman_ford(s)
 
     def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
