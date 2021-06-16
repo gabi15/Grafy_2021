@@ -78,10 +78,11 @@ class Digraph:
     def bellman_ford(self, s, fix_for_johnson=False) -> Union[np.ndarray, bool]:
         """Find distances to all vertices from starting vertex"""
         if s > self.vertices:
-            raise IncorrectInputException("Starting vertex: " + s + " is bigger than size of the graph")
+            raise IncorrectInputException("Starting vertex: " + str(s) + " is bigger than size of the graph")
         d = np.full(self.vertices, np.inf)
         d[s] = 0
-        vertices = np.empty(self.vertices, dtype=int)
+        vertices = np.empty(self.vertices)
+        vertices[:] = np.NaN
         for i in range(self.vertices - 1):
             for j in range(self.vertices):
                 for k in range(self.vertices):
@@ -114,7 +115,7 @@ class Digraph:
                                     self.adjacency_matrix[cycle[u]][cycle[u + 1]] = self.adjacency_matrix[cycle[u]][
                                                                                         cycle[u + 1]] + diff
                             return self.bellman_ford(s, fix_for_johnson=True)
-        return d, vertices
+        return d, vertices, s
 
     def shortest_paths_bellman(self, s):
         connected_components, nr = self.kosaraju()
@@ -128,6 +129,9 @@ class Digraph:
             self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 0)
             self.edges_matrix = np.delete(self.edges_matrix, unconnected_components, 1)
             self.vertices = self.adjacency_matrix.shape[0]
+            if s >= self.vertices:
+                print("Current digraph size is smaller than the starting point that you specified. Displaying paths for the last node")
+                s = self.vertices - 1
         return self.bellman_ford(s)
 
     def initialize_dijkstra_distances_positions(self, starting_node) -> (list, list):
@@ -224,30 +228,22 @@ class Digraph:
         return GraphConverter.convert_graph(self.edges_matrix, GraphRepresentation.ADJACENCY_MATRIX,
                                             output_representation)
 
-    def save_to_file(self, representation, filename) -> bool:
+    def save_to_file(self, filename_edges, filename_weights) -> bool:
         """Save a graph with given representation to the file with given name"""
-        filename = "data/" + filename
-        output_matrix = self.get_digraph(representation)
-        if isinstance(output_matrix, list):
-            with open(filename, "w+") as f:
-                for row in output_matrix:
-                    f.write(" ".join(str(item) for item in row))
-                    f.write("\n")
-            return True
-        elif isinstance(output_matrix, np.ndarray):
-            with open(filename, "w+") as f:
-                np.savetxt(f, output_matrix, fmt="%i")
-            return True
-        else:
-            return False
+        filename_edges = "data/" + filename_edges
+        filename_weights = "data/" + filename_weights
+
+        with open(filename_edges, "w+") as f:
+            np.savetxt(f, self.adjacency_matrix, fmt="%i")
+        with open(filename_weights, "w+") as f:
+            np.savetxt(f, self.edges_matrix, fmt="%i")
+        return True
 
     def visualise_digraph(self, weight=False, file_name="") -> None:
         """Visualize directed graph"""
         f = gv.Digraph('digraph', format='eps', filename=file_name, directory="data")
         f.attr(rankdir='LR', size='8,5')
-
         f.attr('node', shape='circle')
-
         for i in range(self.vertices):
             for j in range(self.vertices):
                 if self.edges_matrix[i][j]:
@@ -255,8 +251,7 @@ class Digraph:
                         f.edge(str(i), str(j), label=str(self.adjacency_matrix[i][j]))
                     else:
                         f.edge(str(i), str(j))
-
-        f.view()
+        f.render(view=True, cleanup=True)
 
     def random_digraph(self, vertices, probability, weight=True, a=-5, b=10) -> None:
         if vertices < 2:
