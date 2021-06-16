@@ -243,9 +243,7 @@ class Digraph:
         """Visualize directed graph"""
         f = gv.Digraph('digraph', format='eps', filename=file_name, directory="data")
         f.attr(rankdir='LR', size='8,5')
-
         f.attr('node', shape='circle')
-
         for i in range(self.vertices):
             for j in range(self.vertices):
                 if self.edges_matrix[i][j]:
@@ -253,7 +251,7 @@ class Digraph:
                         f.edge(str(i), str(j), label=str(self.adjacency_matrix[i][j]))
                     else:
                         f.edge(str(i), str(j))
-        f.view()
+        f.render(view=True, cleanup=True)
 
     def random_digraph(self, vertices, probability, weight=True, a=-5, b=10) -> None:
         if vertices < 2:
