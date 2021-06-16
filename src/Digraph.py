@@ -233,9 +233,9 @@ class Digraph:
         filename_edges = "data/" + filename_edges
         filename_weights = "data/" + filename_weights
 
-        with open(filename_edges, "w+") as f:
-            np.savetxt(f, self.adjacency_matrix, fmt="%i")
         with open(filename_weights, "w+") as f:
+            np.savetxt(f, self.adjacency_matrix, fmt="%i")
+        with open(filename_edges, "w+") as f:
             np.savetxt(f, self.edges_matrix, fmt="%i")
         return True
 

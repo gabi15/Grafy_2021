@@ -258,6 +258,7 @@ def shortest_paths_bellman():
                             paths = paths + str(node) + " -> "
                         else:
                             paths = paths + str(node)
+                print(str(i) + " : " + str(int(item)) + ", path: " + paths)
         else:
             print("Negative values cycle detected. Try again with different node")
             shortest_paths()
