@@ -53,6 +53,16 @@ def generate_strongly_connected_digraph():
         generate_strongly_connected_digraph()
 
 
+def generate_strongly_connected_digraph_without_negative_cycles():
+    n = int(input("Enter the number of graph vertices:\n"))
+    p = float(input("Enter the value of probability:\n"))
+    try:
+        digraph.strongly_connected_component_without_negative_cycles(n, p)
+    except Exception as e:
+        print("Error: " + str(e) + "\nPlease try again\n")
+        generate_strongly_connected_digraph_without_negative_cycles()
+
+
 def read_digraph() -> None:
     filename_edges = input("Enter the name of the input file with digraph edges (stored in folder data):\n")
     filename_weights = input("Enter the name of the input file with digraph weights (stored in folder data):\n")
@@ -88,7 +98,7 @@ def perform_shortest_paths(s):
                 print(str(i) + " : " + str(int(item)) + ", path: " + paths)
             return True
         else:
-            print("Negative values cycle detected. Try again with different node")
+            print("Negative values cycle detected. Try again with a different digraph")
             return False
     except Exception as e:
         print("Error: " + str(e) + "\nPlease try again\n")
@@ -142,6 +152,12 @@ group.add_argument('--generate-connected-np',
                    metavar=('<nvertices>', '<probability>'),
                    action='store',
                    help='Generate a strongly connected np graph.')
+group.add_argument('--generate-connected-np-wc',
+                   nargs=2,
+                   metavar=('<nvertices>', '<probability>'),
+                   action='store',
+                   help='Generate a strongly connected np graph without negative cycles.'
+                   )
 parser.add_argument('--shortest-paths-bellman',
                    metavar='<starting_node>',
                    type=int,
@@ -192,6 +208,14 @@ def run_cmd_app(args):
             n = int(args.generate_connected_np[0])
             p = float(args.generate_connected_np[1])
             digraph.strongly_connected_component(n, p)
+        except Exception as e:
+            print("Error: " + str(e) + "\nPlease try again\n")
+            sys.exit(1)
+    elif args.generate_connected_np_wc is not None:
+        try:
+            n = int(args.generate_connected_np_wc[0])
+            p = float(args.generate_connected_np_wc[1])
+            digraph.strongly_connected_component_without_negative_cycles(n, p)
         except Exception as e:
             print("Error: " + str(e) + "\nPlease try again\n")
             sys.exit(1)
@@ -260,11 +284,11 @@ def shortest_paths_bellman():
                             paths = paths + str(node)
                 print(str(i) + " : " + str(int(item)) + ", path: " + paths)
         else:
-            print("Negative values cycle detected. Try again with different node")
-            shortest_paths()
+            print("Negative values cycle detected. Try again with a different digraph.")
     except Exception as e:
-        print("Error: " + str(e) + "\nPlease try again\n")
-        shortest_paths()
+        letter = input("Error: " + str(e) + "\nPlease try again\nPress Q if you want to return to menu.\n")
+        if letter != 'q':
+            shortest_paths()
 
 
 def main() -> None:
@@ -275,16 +299,19 @@ def main() -> None:
         job = input("Select an option:\n"
                     "1 - Read the digraph from file \n"
                     "2 - Generate a random G(n,p) digraph \n"
-                    "3 - Generate a random strongly conected digraph \n"
+                    "3 - Generate a random strongly connected digraph \n"
+                    "4 - Generate a random strongly connected digraph without negative cycles \n"
                     )
 
-        if job in ["1", "2", "3"]:
+        if job in ["1", "2", "3", "4"]:
             if job == "1":
                 read_digraph()
             if job == "2":
                 generate_digraph()
             if job == "3":
                 generate_strongly_connected_digraph()
+            if job == "4":
+                generate_strongly_connected_digraph_without_negative_cycles()
             while True:
                 job = input("Choose what you want to do with the graph:\n"
                             "1 - Find connected components using Kosaraju\'s algorithm\n"

@@ -70,10 +70,19 @@ class Digraph:
 
     def strongly_connected_component(self, n, p) -> None:
         """Extract biggest strongly connected component from graph"""
-        if self.adjacency_matrix is None:
-            self.random_digraph(n, p)
+        self.random_digraph(n, p)
         while self.kosaraju()[1] != 1:
             self.random_digraph(n, p)
+
+    def strongly_connected_component_without_negative_cycles(self, n, p):
+        """Extract biggest strongly connected component from graph"""
+        self.random_digraph(n, p)
+        flag = True
+        while flag:
+            if self.kosaraju()[1] == 1 and self.bellman_ford(0):
+                flag = False
+            else:
+                self.random_digraph(n, p)
 
     def bellman_ford(self, s, fix_for_johnson=False) -> Union[np.ndarray, bool]:
         """Find distances to all vertices from starting vertex"""
